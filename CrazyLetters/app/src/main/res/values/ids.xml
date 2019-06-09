@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Google Play game services IDs.
+Save this file as res/values/games-ids.xml in your project.
+-->
+<resources>
+    <!-- app_id -->
+    <string name="app_id" translatable="false">1028008788592</string>
+    <!-- package_name -->
+    <string name="package_name" translatable="false">com.avtdev.crazyletters</string>
+    <!-- leaderboard Easy Level -->
+    <string name="leaderboard_easy_level" translatable="false">CgkI8ITl0PUdEAIQAQ</string>
+</resources>
