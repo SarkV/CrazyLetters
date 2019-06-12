@@ -6,6 +6,7 @@ Save this file as res/values/games-ids.xml in your project.
 <resources>
     <!-- app_id -->
     <string name="app_id" translatable="false">1028008788592</string>
+    <string name="client_id" translatable="false">1028008788592-iaa5go15feid59lem232kc06o89fo0hk.apps.googleusercontent.com</string>
     <!-- package_name -->
     <string name="package_name" translatable="false">com.avtdev.crazyletters</string>
     <!-- leaderboard Easy Level -->

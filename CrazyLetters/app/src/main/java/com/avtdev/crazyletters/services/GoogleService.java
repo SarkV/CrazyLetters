@@ -3,6 +3,7 @@ package com.avtdev.crazyletters.services;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
 
@@ -12,7 +13,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.GamesClientStatusCodes;
@@ -72,14 +75,32 @@ public class GoogleService {
 
     private GoogleService(Context context){
         mContext = context;
-        mGoogleSignInClient = GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+        createGoogleSignClient();
+    }
+
+    private void createGoogleSignClient(){
+        GoogleSignInOptions  signInOptions =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                        .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(mContext, signInOptions);
     }
 
     public static GoogleService getInstance(Context context) {
         if(mInstance == null){
             mInstance = new GoogleService(context);
+        }else{
+            mInstance.mContext = context;
         }
         return mInstance;
+    }
+
+    /**
+     * Start a sign in activity.  To properly handle the result, call tryHandleSignInResult from
+     * your Activity's onActivityResult function
+     */
+    public void startSignInIntent() {
+        ((Activity) mContext).startActivityForResult(mGoogleSignInClient.getSignInIntent(), ConstantGS.REQUEST_CODE.SIGN_IN);
     }
 
     public void startQuickGame(long role){
@@ -124,7 +145,7 @@ public class GoogleService {
                 });
     }
 
-    private void onConnected(GoogleSignInAccount googleSignInAccount) {
+    public void onConnected(GoogleSignInAccount googleSignInAccount) {
         Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "signInSilently");
         if (mSignedInAccount != googleSignInAccount) {
 
@@ -151,6 +172,8 @@ public class GoogleService {
 
         mRealTimeMultiplayerClient = null;
         mInvitationsClient = null;
+        mPlayerId = null;
+        mSignedInAccount = null;
     }
 
     private OnFailureListener createFailureListener(final String string) {
