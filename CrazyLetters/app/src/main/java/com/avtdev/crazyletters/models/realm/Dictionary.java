@@ -30,6 +30,9 @@ public class Dictionary extends RealmObject {
     @SerializedName(PROPERTIES.UPDATE_DATE)
     private Date updateDate;
 
+    public Dictionary() {
+    }
+
     public Dictionary(DictionaryResponse dictionaryResponse) {
         this.id = dictionaryResponse.getId();
         this.word = dictionaryResponse.getWord();

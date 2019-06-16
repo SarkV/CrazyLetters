@@ -7,4 +7,9 @@ public class Constants {
         UPDATED,
         DELETED;
     }
+
+    public enum SignInStatus{
+        OK,
+        ERROR
+    }
 }

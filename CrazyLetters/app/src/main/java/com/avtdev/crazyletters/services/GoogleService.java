@@ -8,11 +8,15 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.listeners.ISplash;
+import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.Logger;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -81,6 +85,8 @@ public class GoogleService {
     private void createGoogleSignClient(){
         GoogleSignInOptions  signInOptions =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                        .requestEmail()
+                        .requestProfile()
                         .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(mContext, signInOptions);
@@ -127,26 +133,50 @@ public class GoogleService {
      * Try to sign in without displaying dialogs to the user.
      * If the user has already signed in previously, it will not show dialog.
      */
-    public void signInSilently() {
+    public void signInSilently(final ISplash listener) {
         Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "signInSilently");
 
-        mGoogleSignInClient.silentSignIn().addOnCompleteListener((Activity) mContext,
-                new OnCompleteListener<GoogleSignInAccount>() {
-                    @Override
-                    public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
-                        if (task.isSuccessful()) {
-                            Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "signInSilently", "success");
-                            onConnected(task.getResult());
-                        } else {
-                            Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "signInSilently", "failure", task.getException());
-                            onDisconnected();
-                        }
-                    }
-                });
+        GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mContext);
+
+        if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray())) {
+            mSignedInAccount = account;
+            listener.setSignInResult(Constants.SignInStatus.OK);
+        } else {
+            GoogleSignInClient signInClient = GoogleSignIn.getClient(mContext, signInOptions);
+            signInClient
+                .silentSignIn()
+                .addOnCompleteListener(
+                        (Activity) mContext,
+                        (@NonNull Task<GoogleSignInAccount> task) -> {
+                                if (task.isSuccessful()) {
+                                    mSignedInAccount = task.getResult();
+                                    listener.setSignInResult(Constants.SignInStatus.OK);
+                                } else {
+                                    listener.setSignInResult(Constants.SignInStatus.ERROR);
+                                }
+                        });
+        }
+
     }
 
-    public void onConnected(GoogleSignInAccount googleSignInAccount) {
-        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "signInSilently");
+    public Object checkSignIn(Intent data){
+        Object message = null;
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        if (result.isSuccess()) {
+            // The signed in account is stored in the result.
+            GoogleSignInAccount signedInAccount = result.getSignInAccount();
+        } else {
+            message = result.getStatus().getStatusMessage();
+            if (message == null || ((String) message).isEmpty()) {
+                message = R.string.signin_other_error;
+            }
+        }
+        return message;
+    }
+
+    private void onConnected(GoogleSignInAccount googleSignInAccount) {
+        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "onConnected");
         if (mSignedInAccount != googleSignInAccount) {
 
             mSignedInAccount = googleSignInAccount;
@@ -167,7 +197,7 @@ public class GoogleService {
                     .addOnFailureListener(createFailureListener("There was a problem getting the player id!"));
         }
     }
-    public void onDisconnected() {
+    private void onDisconnected() {
         Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "onDisconnected");
 
         mRealTimeMultiplayerClient = null;

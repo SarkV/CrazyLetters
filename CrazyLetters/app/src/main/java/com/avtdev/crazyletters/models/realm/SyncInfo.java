@@ -22,6 +22,9 @@ public class SyncInfo extends RealmObject {
     @SerializedName(PROPERTIES.SYNC_DATE)
     private Date syncDate;
 
+    public SyncInfo() {
+    }
+
     public SyncInfo(String table, Date syncDate) {
         this.table = table;
         this.syncDate = syncDate;
