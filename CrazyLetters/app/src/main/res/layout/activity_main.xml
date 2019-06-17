@@ -1,9 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorPrimary"
     tools:context=".activities.MainActivity">
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name_main"
+        android:gravity="center"
+        android:textSize="100dp"
+        android:textStyle="bold"
+        android:layout_margin="15dp"
+        android:textColor="@color/colorSecondary"
+        android:fontFamily="@font/storm"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:layout_below="@id/tvTitle">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/btnSinglePlayer"
+                style="@style/MenuButton"
+                android:text="@string/single_player"/>
+
+            <Button
+                android:id="@+id/btnMultiplayer"
+                style="@style/MenuButton"
+                android:text="@string/multiplayer"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/btnInvite"
+                style="@style/MenuButton"
+                android:text="@string/invite_players"/>
+
+            <Button
+                android:id="@+id/btnSeeInvitations"
+                style="@style/MenuButton"
+                android:text="@string/see_invitations"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

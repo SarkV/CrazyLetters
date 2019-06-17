@@ -1,8 +1,8 @@
 package com.avtdev.crazyletters.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.avtdev.crazyletters.R;
 

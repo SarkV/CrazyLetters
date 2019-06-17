@@ -169,7 +169,7 @@ public class GoogleService {
         } else {
             message = result.getStatus().getStatusMessage();
             if (message == null || ((String) message).isEmpty()) {
-                message = R.string.signin_other_error;
+                message = R.string.error_signin_other;
             }
         }
         return message;
@@ -238,16 +238,16 @@ public class GoogleService {
                 errorString = mContext.getString(R.string.status_multiplayer_error_not_trusted_tester);
                 break;
             case GamesClientStatusCodes.MATCH_ERROR_ALREADY_REMATCHED:
-                errorString = mContext.getString(R.string.match_error_already_rematched);
+                errorString = mContext.getString(R.string.error_match_already_rematched);
                 break;
             case GamesClientStatusCodes.NETWORK_ERROR_OPERATION_FAILED:
-                errorString = mContext.getString(R.string.network_error_operation_failed);
+                errorString = mContext.getString(R.string.error_network_operation_failed);
                 break;
             case GamesClientStatusCodes.INTERNAL_ERROR:
                 errorString = mContext.getString(R.string.internal_error);
                 break;
             case GamesClientStatusCodes.MATCH_ERROR_INACTIVE_MATCH:
-                errorString = mContext.getString(R.string.match_error_inactive_match);
+                errorString = mContext.getString(R.string.error_match_inactive_match);
                 break;
             case GamesClientStatusCodes.MATCH_ERROR_LOCALLY_MODIFIED:
                 errorString = mContext.getString(R.string.match_error_locally_modified);
