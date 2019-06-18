@@ -4,11 +4,14 @@ import androidx.annotation.Nullable;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.listeners.ISplash;
 import com.avtdev.crazyletters.services.ConstantGS;
 import com.avtdev.crazyletters.services.GoogleService;
+import com.avtdev.crazyletters.utils.Constants;
 
 public class LoginActivity extends BaseActivity {
 
@@ -32,12 +35,11 @@ public class LoginActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ConstantGS.REQUEST_CODE.SIGN_IN) {
-            Object message = GoogleService.getInstance(this).checkSignIn(data);
-            if(message == null){
-
-            }else{
-                showOneBtnDialog(null, message, android.R.string.ok, null);
-            }
+            GoogleService.getInstance(this).checkSignIn(data, (Constants.SignInStatus status) -> {
+                if(status != null && status.equals(Constants.SignInStatus.OK)){
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                }
+            });
         }
 
     }

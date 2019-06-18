@@ -9,6 +9,9 @@ import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.listeners.ISplash;
 import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.utils.Constants;
+import com.avtdev.crazyletters.utils.Utils;
+
+import io.realm.internal.Util;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -18,7 +21,6 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         GoogleService.getInstance(this).signInSilently((Constants.SignInStatus status) -> {
-
             Intent intent;
             if(status != null && status.equals(Constants.SignInStatus.OK)){
                 intent = new Intent(SplashActivity.this, MainActivity.class);
@@ -28,7 +30,5 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-
-
     }
 }

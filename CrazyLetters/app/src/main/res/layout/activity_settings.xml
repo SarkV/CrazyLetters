@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="30dp"
+    android:background="@color/colorPrimaryLight"
+    tools:context=".activities.SettingsActivity">
+
+    <TextView
+        android:id="@+id/tvSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:textSize="60sp"
+        android:layout_marginBottom="30dp"
+        android:textColor="@color/colorSecondary"
+        android:fontFamily="@font/storm"/>
+    <Switch
+        android:id="@+id/swShowNotifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/show_notifications"
+        android:checked="true"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/colorSecondaryLight"
+        android:layout_below="@id/tvSettings"/>
+
+    <Switch
+        android:id="@+id/swAllowInvitations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/allow_invitations"
+        android:checked="true"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+
+        android:textColor="@color/colorSecondaryLight"
+        android:layout_below="@id/swShowNotifications"/>
+    <TextView
+        android:id="@+id/btnSignOut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_out"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_margin="20dp"
+        android:textColor="@color/colorSecondaryLight"
+        android:gravity="center"
+        android:layout_above="@id/llBottom" />
+    <LinearLayout
+        android:id="@+id/llBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MenuButton"
+            android:text="@string/cancel"/>
+        <Button
+            android:id="@+id/btnSave"
+            style="@style/MenuButton"
+            android:text="@string/save"/>
+
+
+    </LinearLayout>
+
+</RelativeLayout>

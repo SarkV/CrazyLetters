@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorPrimaryLight"
     tools:context=".activities.MainActivity">
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
@@ -13,8 +14,10 @@
         android:text="@string/app_name_main"
         android:gravity="center"
         android:textSize="100dp"
-        android:textStyle="bold"
-        android:layout_margin="15dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:textColor="@color/colorSecondary"
         android:fontFamily="@font/storm"/>
     <LinearLayout
@@ -53,6 +56,21 @@
                 android:id="@+id/btnSeeInvitations"
                 style="@style/MenuButton"
                 android:text="@string/see_invitations"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/btnLeaderboard"
+                style="@style/MenuButton"
+                android:text="@string/leaderboard"/>
+
+            <Button
+                android:id="@+id/btnSettings"
+                style="@style/MenuButton"
+                android:text="@string/settings"/>
         </LinearLayout>
 
     </LinearLayout>

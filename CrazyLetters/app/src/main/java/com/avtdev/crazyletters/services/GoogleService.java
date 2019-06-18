@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.activities.BaseActivity;
 import com.avtdev.crazyletters.listeners.ISplash;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.Logger;
+import com.avtdev.crazyletters.utils.Utils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -101,13 +103,104 @@ public class GoogleService {
         return mInstance;
     }
 
-    /**
-     * Start a sign in activity.  To properly handle the result, call tryHandleSignInResult from
-     * your Activity's onActivityResult function
-     */
     public void startSignInIntent() {
         ((Activity) mContext).startActivityForResult(mGoogleSignInClient.getSignInIntent(), ConstantGS.REQUEST_CODE.SIGN_IN);
     }
+
+    public void signInSilently(final ISplash listener) {
+        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "signInSilently");
+
+        GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mContext);
+
+        if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray())) {
+            onConnected(account, listener);
+        } else {
+            GoogleSignInClient signInClient = GoogleSignIn.getClient(mContext, signInOptions);
+            signInClient
+                .silentSignIn()
+                .addOnCompleteListener(
+                        (Activity) mContext,
+                        (@NonNull Task<GoogleSignInAccount> task) -> {
+                                if (task.isSuccessful()) {
+                                    mSignedInAccount = task.getResult();
+                                    onConnected(mSignedInAccount, listener);
+                                } else {
+                                    listener.setSignInResult(Constants.SignInStatus.ERROR_SIGN_IN);
+                                }
+                        });
+        }
+    }
+
+    public void signOut(OnCompleteListener listener){
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener((Activity) mContext, task -> {
+                    onDisconnected();
+                    listener.onComplete(task);
+                });
+
+    }
+
+    public void checkSignIn(Intent data, ISplash listener){
+        Object message = null;
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        if (result.isSuccess()) {
+            // The signed in account is stored in the result.
+            GoogleSignInAccount signedInAccount = result.getSignInAccount();
+            onConnected(signedInAccount, listener);
+        } else {
+            message = result.getStatus().getStatusMessage();
+            if (message == null || ((String) message).isEmpty()) {
+                message = R.string.error_signin_other;
+            }
+            ((BaseActivity) mContext).showOneBtnDialog(null, message, android.R.string.ok, null);
+        }
+    }
+
+    private void onConnected(GoogleSignInAccount googleSignInAccount, ISplash listener) {
+        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "onConnected");
+        if (mSignedInAccount != googleSignInAccount) {
+
+            mSignedInAccount = googleSignInAccount;
+
+            // update the clients
+            mRealTimeMultiplayerClient = Games.getRealTimeMultiplayerClient(mContext, googleSignInAccount);
+            mInvitationsClient = Games.getInvitationsClient(mContext, googleSignInAccount);
+
+            // get the playerId from the PlayersClient
+            PlayersClient playersClient = Games.getPlayersClient(mContext, googleSignInAccount);
+            playersClient.getCurrentPlayer()
+                    .addOnSuccessListener((Player player) -> {
+                        mPlayerId = player.getPlayerId();
+                        listener.setSignInResult(Constants.SignInStatus.OK);
+                    })
+                    .addOnFailureListener(createFailureListener("There was a problem getting the player id!", listener));
+        }else{
+            listener.setSignInResult(Constants.SignInStatus.OK);
+        }
+    }
+
+    private void onDisconnected() {
+        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "onDisconnected");
+
+        mRealTimeMultiplayerClient = null;
+        mInvitationsClient = null;
+        mPlayerId = null;
+        mSignedInAccount = null;
+    }
+
+
+    public void showLeaderboard() {
+        Games.getLeaderboardsClient(mContext, GoogleSignIn.getLastSignedInAccount(mContext))
+                .getLeaderboardIntent(mContext.getString(R.string.leaderboard_easy_level))
+                .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        ((Activity) mContext).startActivityForResult(intent, 9004);
+                    }
+                });
+    }
+
 
     public void startQuickGame(long role){
         // auto-match criteria to invite one random automatch opponent.
@@ -129,89 +222,10 @@ public class GoogleService {
                 .create(mJoinedRoomConfig);
     }
 
-    /**
-     * Try to sign in without displaying dialogs to the user.
-     * If the user has already signed in previously, it will not show dialog.
-     */
-    public void signInSilently(final ISplash listener) {
-        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "signInSilently");
 
-        GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mContext);
-
-        if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray())) {
-            mSignedInAccount = account;
-            listener.setSignInResult(Constants.SignInStatus.OK);
-        } else {
-            GoogleSignInClient signInClient = GoogleSignIn.getClient(mContext, signInOptions);
-            signInClient
-                .silentSignIn()
-                .addOnCompleteListener(
-                        (Activity) mContext,
-                        (@NonNull Task<GoogleSignInAccount> task) -> {
-                                if (task.isSuccessful()) {
-                                    mSignedInAccount = task.getResult();
-                                    listener.setSignInResult(Constants.SignInStatus.OK);
-                                } else {
-                                    listener.setSignInResult(Constants.SignInStatus.ERROR);
-                                }
-                        });
-        }
-
-    }
-
-    public Object checkSignIn(Intent data){
-        Object message = null;
-        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-        if (result.isSuccess()) {
-            // The signed in account is stored in the result.
-            GoogleSignInAccount signedInAccount = result.getSignInAccount();
-        } else {
-            message = result.getStatus().getStatusMessage();
-            if (message == null || ((String) message).isEmpty()) {
-                message = R.string.error_signin_other;
-            }
-        }
-        return message;
-    }
-
-    private void onConnected(GoogleSignInAccount googleSignInAccount) {
-        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "onConnected");
-        if (mSignedInAccount != googleSignInAccount) {
-
-            mSignedInAccount = googleSignInAccount;
-
-            // update the clients
-            mRealTimeMultiplayerClient = Games.getRealTimeMultiplayerClient(mContext, googleSignInAccount);
-            mInvitationsClient = Games.getInvitationsClient(mContext, googleSignInAccount);
-
-            // get the playerId from the PlayersClient
-            PlayersClient playersClient = Games.getPlayersClient(mContext, googleSignInAccount);
-            playersClient.getCurrentPlayer()
-                    .addOnSuccessListener(new OnSuccessListener<Player>() {
-                        @Override
-                        public void onSuccess(Player player) {
-                            mPlayerId = player.getPlayerId();
-                        }
-                    })
-                    .addOnFailureListener(createFailureListener("There was a problem getting the player id!"));
-        }
-    }
-    private void onDisconnected() {
-        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "onDisconnected");
-
-        mRealTimeMultiplayerClient = null;
-        mInvitationsClient = null;
-        mPlayerId = null;
-        mSignedInAccount = null;
-    }
-
-    private OnFailureListener createFailureListener(final String string) {
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                handleException(e, string);
-            }
+    private OnFailureListener createFailureListener(final String string, ISplash listener) {
+        return (@NonNull Exception e) -> {
+               handleException(e, string, listener);
         };
     }
 
@@ -222,7 +236,7 @@ public class GoogleService {
      * @param details   Will display alongside the exception if you wish to provide more details for why the exception
      *                  happened
      */
-    private void handleException(Exception exception, String details) {
+    private void handleException(Exception exception, String details, ISplash listener) {
         int status = 0;
 
         if (exception instanceof ApiException) {
@@ -263,10 +277,8 @@ public class GoogleService {
 
         String message = mContext.getString(R.string.status_exception_error, details, status, exception);
 
-        new AlertDialog.Builder(mContext)
-                .setTitle("Error")
-                .setMessage(message + "\n" + errorString)
-                .setNeutralButton(android.R.string.ok, null)
-                .show();
+        listener.setSignInResult(Constants.SignInStatus.ERROR_PLAYER);
+
+        ((BaseActivity) mContext).showOneBtnDialog(null, message + "\n" + errorString, android.R.string.ok, null);
     }
 }

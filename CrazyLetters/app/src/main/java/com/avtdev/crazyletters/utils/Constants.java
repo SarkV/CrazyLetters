@@ -10,6 +10,14 @@ public class Constants {
 
     public enum SignInStatus{
         OK,
-        ERROR
+        ERROR_SIGN_IN,
+        ERROR_PLAYER
+
+    }
+
+    public enum Preferences {
+        NAME,
+        SHOW_NOTIFICATIONS,
+        ALLOW_INVITATIONS
     }
 }

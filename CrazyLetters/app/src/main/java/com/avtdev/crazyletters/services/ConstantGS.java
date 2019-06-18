@@ -5,4 +5,8 @@ public class ConstantGS {
     public static final class REQUEST_CODE{
         public static final int SIGN_IN = 9001;
     }
+
+    public enum LEADERBOARDS{
+        EASY
+    }
 }
