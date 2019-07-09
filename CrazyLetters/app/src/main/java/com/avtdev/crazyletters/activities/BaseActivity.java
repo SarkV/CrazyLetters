@@ -3,17 +3,22 @@ package com.avtdev.crazyletters.activities;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.avtdev.crazyletters.R;
+import com.google.android.gms.games.GamesActivityResultCodes;
 
 public class BaseActivity extends AppCompatActivity {
+
+    ProgressBar mProgressBar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
@@ -60,4 +65,35 @@ public class BaseActivity extends AppCompatActivity {
         }
         builder.show();
     }
+
+    public void logout(){
+        startActivity(new Intent(BaseActivity.this, LoginActivity.class));
+        finish();
+    }
+
+
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+
+        if (res == GamesActivityResultCodes.RESULT_RECONNECT_REQUIRED) {
+            logout();
+        }
+    }
+
+    public void showProgressDialog(){
+        if(mProgressBar == null)
+            mProgressBar = findViewById(R.id.progressBar);
+
+        if(mProgressBar != null){
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideProgressDialog(){
+        if(mProgressBar != null){
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+
 }

@@ -9,4 +9,6 @@
     <color name="colorSecondaryLight">#80e27e</color>
 
     <color name="colorAccent">@color/colorSecondary</color>
+
+    <color name="red">#F30505</color>
 </resources>

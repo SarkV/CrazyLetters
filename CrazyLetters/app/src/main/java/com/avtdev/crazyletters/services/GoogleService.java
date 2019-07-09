@@ -1,27 +1,25 @@
 package com.avtdev.crazyletters.services;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
 
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.activities.BaseActivity;
 import com.avtdev.crazyletters.listeners.ISplash;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.Logger;
-import com.avtdev.crazyletters.utils.Utils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.GamesClientStatusCodes;
@@ -38,19 +36,17 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-
 public class GoogleService {
 
     private static final String TAG = "GoogleService";
 
     private Context mContext;
-    private static GoogleService mInstance;
+    private static GoogleService sInstance;
 
     // Client used to sign in with Google APIs
     private GoogleSignInClient mGoogleSignInClient = null;
 
-    // Client used to interact with the real time multiplayer system.
+    // Client used to interact with the real time ic_multiplayer system.
     private RealTimeMultiplayerClient mRealTimeMultiplayerClient = null;
 
     // Client used to interact with the Invitation system.
@@ -95,12 +91,12 @@ public class GoogleService {
     }
 
     public static GoogleService getInstance(Context context) {
-        if(mInstance == null){
-            mInstance = new GoogleService(context);
+        if(sInstance == null){
+            sInstance = new GoogleService(context);
         }else{
-            mInstance.mContext = context;
+            sInstance.mContext = context;
         }
-        return mInstance;
+        return sInstance;
     }
 
     public void startSignInIntent() {

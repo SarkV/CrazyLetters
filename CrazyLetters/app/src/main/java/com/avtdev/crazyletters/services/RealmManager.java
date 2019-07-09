@@ -3,11 +3,15 @@ package com.avtdev.crazyletters.services;
 import android.content.Context;
 
 import com.avtdev.crazyletters.models.realm.Dictionary;
+import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.models.realm.SyncInfo;
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
 import com.avtdev.crazyletters.utils.Constants;
+import com.avtdev.crazyletters.utils.GameConstants;
+import com.avtdev.crazyletters.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -74,5 +78,43 @@ public class RealmManager {
 
     public List<Dictionary> getDictionary(String language){
         return getRealm().where(Dictionary.class).equalTo(Dictionary.PROPERTIES.LANGUAGE, language).findAll();
+    }
+
+    public void saveGame(int[] velocity, GameConstants.LettersType[] lettersType, String[] language, int time){
+        getRealm().executeTransaction(realm -> {
+            Game game = realm.where(Game.class)
+                    .equalTo(Game.PROPERTIES.VELOCITY, Utils.listToString(Arrays.asList(velocity)))
+                    .and()
+                    .equalTo(Game.PROPERTIES.LETTERS_TYPE, Utils.listToString(Arrays.asList(lettersType)))
+                    .and()
+                    .equalTo(Game.PROPERTIES.LANGUAGES, Utils.listToString(Arrays.asList(language)))
+                    .and()
+                    .equalTo(Game.PROPERTIES.LETTERS_TYPE, time)
+                    .findFirst();
+
+            if(game == null){
+                realm.insertOrUpdate(new Game(velocity, lettersType, language, time));
+            }else{
+                game.setLastUsed(new Date());
+                realm.insertOrUpdate(game);
+            }
+
+        });
+    }
+
+    public void updateGame(Game game){
+        getRealm().executeTransaction(realm -> {
+            game.setLastUsed(new Date());
+            realm.insertOrUpdate(game);
+        });
+    }
+
+    public Game getGame(Long id){
+        if(id == null) return null;
+        return getRealm().where(Game.class).equalTo(Game.PROPERTIES.ID, id).findFirst();
+    }
+
+    public List<Game> getGames(){
+        return getRealm().where(Game.class).findAll();
     }
 }

@@ -12,12 +12,16 @@ public class Constants {
         OK,
         ERROR_SIGN_IN,
         ERROR_PLAYER
-
     }
 
     public enum Preferences {
         NAME,
         SHOW_NOTIFICATIONS,
         ALLOW_INVITATIONS
+    }
+
+    public enum Extras {
+        GAME,
+        GAME_MODE
     }
 }

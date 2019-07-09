@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryLight"
+    android:background="@color/colorPrimary"
     tools:context=".activities.MainActivity">
 
     <TextView
@@ -35,11 +35,14 @@
             <Button
                 android:id="@+id/btnSinglePlayer"
                 style="@style/MenuButton"
+                android:drawableStart="@drawable/ic_singleplayer"
+                android:padding="16dp"
                 android:text="@string/single_player"/>
 
             <Button
                 android:id="@+id/btnMultiplayer"
                 style="@style/MenuButton"
+                android:drawableStart="@drawable/ic_multiplayer"
                 android:text="@string/multiplayer"/>
         </LinearLayout>
 
@@ -50,12 +53,14 @@
             <Button
                 android:id="@+id/btnInvite"
                 style="@style/MenuButton"
-                android:text="@string/invite_players"/>
+                android:drawableStart="@drawable/ic_invite"
+                android:text="@string/invitations"/>
 
             <Button
                 android:id="@+id/btnSeeInvitations"
                 style="@style/MenuButton"
-                android:text="@string/see_invitations"/>
+                android:drawableStart="@drawable/ic_shop"
+                android:text="@string/shop"/>
         </LinearLayout>
 
         <LinearLayout
@@ -65,11 +70,13 @@
             <Button
                 android:id="@+id/btnLeaderboard"
                 style="@style/MenuButton"
+                android:drawableStart="@drawable/ic_leaderboard"
                 android:text="@string/leaderboard"/>
 
             <Button
                 android:id="@+id/btnSettings"
                 style="@style/MenuButton"
+                android:drawableStart="@drawable/ic_settings"
                 android:text="@string/settings"/>
         </LinearLayout>
 

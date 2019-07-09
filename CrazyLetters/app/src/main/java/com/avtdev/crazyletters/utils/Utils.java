@@ -3,9 +3,46 @@ package com.avtdev.crazyletters.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 public class Utils {
 
     public static final String TAG = "Utils";
+
+    public static boolean isNull(Object object){
+        return object == null || (object instanceof String && String.valueOf(object).trim().isEmpty());
+    }
+
+    public static <T> String listToString(List<T> listData){
+        String returnData = null;
+        if(listData != null){
+            for(T data : listData){
+                if(returnData == null){
+                    returnData = String.valueOf(listData);
+                }else{
+                    returnData += "," + String.valueOf(listData);
+                }
+            }
+        }
+        return returnData;
+    }
+
+    public static <T> T[] stringToList(String data, Class<T> toClass){
+        T[] listData = (T[]) Array.newInstance(toClass, 0);
+        if(data != null){
+            String[] stringData = data.split(";");
+            listData = (T[]) Array.newInstance(toClass, stringData.length);
+            for(int i = 0; i < listData.length; i++) {
+                if(toClass.isEnum()){
+                    listData[i] = (T) Enum.valueOf((Class) toClass, stringData[i]);
+                }else{
+                    listData[i] = toClass.cast(stringData[i]);
+                }
+            }
+        }
+        return listData;
+    }
 
 
     public static void setSharedPreferences(Context context, String key, Object value){

@@ -51,8 +51,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.btnSignOut:
                 GoogleService.getInstance(this).signOut((@NonNull Task task) -> {
-                    startActivity(new Intent(SettingsActivity.this, LoginActivity.class));
-                    finish();
+                    logout();
                 });
                 break;
         }

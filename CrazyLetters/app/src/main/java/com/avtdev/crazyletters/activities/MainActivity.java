@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.services.GoogleService;
+import com.google.android.gms.games.GamesActivityResultCodes;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener{
 
@@ -46,5 +47,4 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 break;
         }
     }
-
 }
