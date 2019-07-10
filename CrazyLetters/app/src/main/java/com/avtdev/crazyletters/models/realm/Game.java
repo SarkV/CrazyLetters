@@ -42,6 +42,9 @@ public class Game extends RealmObject {
     @SerializedName(PROPERTIES.LAST_USED)
     private Date mLastUsed;
 
+    public Game() {
+    }
+
     public Game(int[] mVelocity, GameConstants.LettersType[] mLettersType, String[] mLanguages, int mTime) {
         this.id = UUID.randomUUID().getMostSignificantBits();
         setVelocity(mVelocity);

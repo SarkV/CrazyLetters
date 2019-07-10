@@ -27,6 +27,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSinglePlayer:
+                startActivity(new Intent(MainActivity.this, GameActivity.class));
 
                 break;
             case R.id.btnMultiplayer:
