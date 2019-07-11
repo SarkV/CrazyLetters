@@ -13,6 +13,19 @@
     <string name="leaderboard">Leaderboard</string>
     <string name="sign_out">Sign Out</string>
 
+    <string name="infinite" translatable="false">\u221E</string>
+
+    <string name="velocity_min">Min Velocity</string>
+    <string name="velocity_max">Max Velocity</string>
+
+    <string name="letter_type">Letters Movements</string>
+    <string name="letter_type_horiz_move">Horizontal Movements</string>
+    <string name="letter_type_vert_move">Vertical Movements</string>
+    <string name="letter_type_diag_move">Diagonal Movements</string>
+    <string name="letter_type_show_hide">Show and Hide</string>
+
+    <string name="time">Time</string>
+
     <!--Setings options-->
     <string name="show_notifications">Show Notifications</string>
     <string name="allow_invitations">Allow Invitations</string>

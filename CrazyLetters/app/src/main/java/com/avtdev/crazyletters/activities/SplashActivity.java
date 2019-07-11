@@ -3,8 +3,10 @@ package com.avtdev.crazyletters.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
+import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.listeners.ISplash;
 import com.avtdev.crazyletters.services.GoogleService;
@@ -22,7 +24,7 @@ public class SplashActivity extends AppCompatActivity {
 
         GoogleService.getInstance(this).signInSilently((Constants.SignInStatus status) -> {
             Intent intent;
-            if(status != null && status.equals(Constants.SignInStatus.OK)){
+            if((status != null && status.equals(Constants.SignInStatus.OK)) || BuildConfig.LOCAL){
                 intent = new Intent(SplashActivity.this, MainActivity.class);
             }else{
                 intent = new Intent(SplashActivity.this, LoginActivity.class);

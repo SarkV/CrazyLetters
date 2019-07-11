@@ -11,4 +11,6 @@
     <color name="colorAccent">@color/colorSecondary</color>
 
     <color name="red">#F30505</color>
+    <color name="blue">#008AFF</color>
+    <color name="white">#FFFFFF</color>
 </resources>
