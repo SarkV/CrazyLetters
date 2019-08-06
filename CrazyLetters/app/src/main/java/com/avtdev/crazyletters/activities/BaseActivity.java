@@ -67,7 +67,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void logout(){
-        startActivity(new Intent(BaseActivity.this, LoginActivity.class));
+        startActivity(new Intent(BaseActivity.this, SplashActivity.class));
         finish();
     }
 
@@ -81,12 +81,12 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void showProgressDialog(){
-        if(mProgressBar == null)
+       /* if(mProgressBar == null)
             mProgressBar = findViewById(R.id.progressBar);
 
         if(mProgressBar != null){
             mProgressBar.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
     public void hideProgressDialog(){

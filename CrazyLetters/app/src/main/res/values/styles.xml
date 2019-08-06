@@ -8,15 +8,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="MenuButton" parent="AppTheme">
+    <style name="Button" parent="AppTheme">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:layout_margin">@dimen/menu_btn_margin</item>
         <item name="android:background">@color/colorSecondaryLight</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="drawableTint">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="MenuButton" parent="Button">
+        <item name="android:padding">16dp</item>
+        <item name="android:layout_margin">@dimen/menu_btn_margin</item>
     </style>
 
 </resources>

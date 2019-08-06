@@ -4,7 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class Utils {
 
@@ -63,7 +73,7 @@ public class Utils {
             }
             sharedPreferences.apply();
         }catch (Exception ex){
-            Logger.log(Logger.LOGGER_TYPE.ERROR, TAG,"setSharedPreferences", ex);
+            Logger.e(TAG,"setSharedPreferences", ex);
         }
     }
 
@@ -73,7 +83,7 @@ public class Utils {
             SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(), Context.MODE_PRIVATE);
             value = sharedPreferences.getString(key, defaultValue);
         }catch (Exception ex){
-            Logger.log(Logger.LOGGER_TYPE.ERROR, TAG,"getStringSharedPreferences", ex);
+            Logger.e(TAG,"getStringSharedPreferences", ex);
         }
         return value;
     }
@@ -84,7 +94,7 @@ public class Utils {
             SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(), Context.MODE_PRIVATE);
             value = sharedPreferences.getBoolean(key, defaultValue);
         }catch (Exception ex){
-            Logger.log(Logger.LOGGER_TYPE.ERROR, TAG,"getBooleanSharedPreferences", ex);
+            Logger.e(TAG,"getBooleanSharedPreferences", ex);
         }
         return value;
     }
@@ -95,8 +105,32 @@ public class Utils {
             SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(), Context.MODE_PRIVATE);
             value = sharedPreferences.getInt(key, defaultValue);
         }catch (Exception ex){
-            Logger.log(Logger.LOGGER_TYPE.ERROR, TAG,"getIntSharedPreferences", ex);
+            Logger.e(TAG,"getIntSharedPreferences", ex);
         }
         return value;
+    }
+
+    public static Long getLongSharedPreferences(Context context, String key, Long defaultValue){
+        Long value = defaultValue;
+        try{
+            SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(), Context.MODE_PRIVATE);
+            value = sharedPreferences.getLong(key, defaultValue);
+        }catch (Exception ex){
+            Logger.e(TAG,"getIntSharedPreferences", ex);
+        }
+        return value;
+    }
+
+    public static long getUTCDate(){
+        String pattern = "yyyyMMddHHmm";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDateTime date = LocalDateTime.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern);
+            return Long.parseLong(date.format(format));
+        }
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return Long.parseLong(simpleDateFormat.format(date));
     }
 }

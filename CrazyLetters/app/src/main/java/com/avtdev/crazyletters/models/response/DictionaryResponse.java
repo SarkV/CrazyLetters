@@ -18,12 +18,6 @@ public class DictionaryResponse{
     @SerializedName("language")
     private String language;
 
-    @SerializedName("action")
-    private String action;
-
-    @SerializedName("updateDate")
-    private Date updateDate;
-
     public String getId() {
         return id;
     }
@@ -46,21 +40,5 @@ public class DictionaryResponse{
 
     public void setLanguage(String language) {
         this.language = language;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
     }
 }

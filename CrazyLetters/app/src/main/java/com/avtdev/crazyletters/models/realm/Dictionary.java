@@ -14,7 +14,6 @@ public class Dictionary extends RealmObject {
         public static final String ID = "id";
         public static final String WORD = "word";
         public static final String LANGUAGE = "language";
-        public static final String UPDATE_DATE = "updateDate";
     }
 
     @PrimaryKey
@@ -27,9 +26,6 @@ public class Dictionary extends RealmObject {
     @SerializedName(PROPERTIES.LANGUAGE)
     private String language;
 
-    @SerializedName(PROPERTIES.UPDATE_DATE)
-    private Date updateDate;
-
     public Dictionary() {
     }
 
@@ -37,7 +33,6 @@ public class Dictionary extends RealmObject {
         this.id = dictionaryResponse.getId();
         this.word = dictionaryResponse.getWord();
         this.language = dictionaryResponse.getLanguage();
-        this.updateDate = dictionaryResponse.getUpdateDate();
     }
 
     public String getId() {
@@ -62,13 +57,5 @@ public class Dictionary extends RealmObject {
 
     public void setLanguage(String language) {
         this.language = language;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
     }
 }

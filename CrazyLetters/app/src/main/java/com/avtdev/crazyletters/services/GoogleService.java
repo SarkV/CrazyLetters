@@ -104,7 +104,7 @@ public class GoogleService {
     }
 
     public void signInSilently(final ISplash listener) {
-        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "signInSilently");
+        Logger.d(TAG , "signInSilently");
 
         GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mContext);
@@ -154,7 +154,7 @@ public class GoogleService {
     }
 
     private void onConnected(GoogleSignInAccount googleSignInAccount, ISplash listener) {
-        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "onConnected");
+        Logger.d(TAG , "onConnected");
         if (mSignedInAccount != googleSignInAccount) {
 
             mSignedInAccount = googleSignInAccount;
@@ -177,7 +177,7 @@ public class GoogleService {
     }
 
     private void onDisconnected() {
-        Logger.log(Logger.LOGGER_TYPE.DEBUG, TAG , "onDisconnected");
+        Logger.d(TAG , "onDisconnected");
 
         mRealTimeMultiplayerClient = null;
         mInvitationsClient = null;

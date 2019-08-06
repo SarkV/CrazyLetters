@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1028008788592",
+    "firebase_url": "https://crazy-letters-f32d6.firebaseio.com",
+    "project_id": "crazy-letters-f32d6",
+    "storage_bucket": "crazy-letters-f32d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028008788592:android:dc9d28ad9378d635",
+        "android_client_info": {
+          "package_name": "com.avtdev.crazyletters"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1028008788592-vktj30ethfpcah2cm6sqrqq2prc8g3en.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD59hA-OiMfix8lZR1UtjZz9o6DPqI-i9s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1028008788592-vktj30ethfpcah2cm6sqrqq2prc8g3en.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

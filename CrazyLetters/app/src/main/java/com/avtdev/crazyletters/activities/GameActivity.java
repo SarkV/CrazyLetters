@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.services.GameRoom;
+import com.avtdev.crazyletters.services.RealmManager;
+import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.GameConstants;
 import com.avtdev.crazyletters.utils.Logger;
 
@@ -39,23 +41,14 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_game);
 
         try{
-         //   if(getIntent() != null && getIntent().getExtras() != null){
-              /*  Bundle extras = getIntent().getExtras();
-                Long gameId = extras.getLong(Constants.Extras.GAME.name());
-                mGame = RealmManager.getInstance(this).getGame(gameId);
-                if(mGame == null){*/
-                    mGame = new Game(
-                            new int[]{1,2},
-                            new GameConstants.LettersType[]{GameConstants.LettersType.DIAGONAL_MOVE},
-                            new String[]{"en"},
-                            -1);
+            mGame = RealmManager.getInstance(this).getLastGame();
+            if(mGame == null){
 
-                    mGameRoom = GameRoom.getInstance();
-                    mGameRoom.startGame(new ArrayList<>());
-                    //finish();
-              //  }
-                //mGameMode = GameConstants.Mode.valueOf(extras.getString(Constants.Extras.GAME_MODE.name(), GameConstants.Mode.INVITATION.name()));
-
+                mGameRoom = GameRoom.getInstance();
+                mGameRoom.startGame(new ArrayList<>());
+                //finish();
+            }
+            //mGameMode = GameConstants.Mode.valueOf(extras.getString(Constants.Extras.GAME_MODE.name(), GameConstants.Mode.INVITATION.name()));
 
             mTime = findViewById(R.id.tvTime);
             mCurrentWord = findViewById(R.id.tvCurrentWord);
@@ -69,12 +62,8 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
             initializeTime();
             initializeTextListener();
 
-          /*  }else{
-                finish();
-            }*/
-
         }catch (Exception ex){
-            Logger.log(Logger.LOGGER_TYPE.ERROR, "GameActivity", "onCreate", ex);
+            Logger.e("GameActivity", "onCreate", ex);
             finish();
         }
     }

@@ -17,7 +17,16 @@ public class Constants {
     public enum Preferences {
         NAME,
         SHOW_NOTIFICATIONS,
-        ALLOW_INVITATIONS
+        ALLOW_INVITATIONS,
+        LAST_SYNC_DICTIONARY,
+        LAST_SYNC_GAME_MODES
+    }
+
+    public static class Firebase{
+        public static int NUMSINCRO = 2;
+        public static String DICTIONARY = "dictionary";
+        public static String GAMEMODE = "gameMode";
+        public static String CREATEDAT = "createdAt";
     }
 
     public enum Extras {

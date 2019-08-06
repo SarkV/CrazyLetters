@@ -1,60 +1,71 @@
-
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin'
-import { Player } from '../models/player';
-import { Room } from '../models/room';
-
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
-class Rooms {
-    /**
-      * Search a non full room of a specific size
-      *
-      * @param db The database connection
-      * @param trs The transaction in which to execute the request
-      * @param size The number of players in the room
-      */
-      static findFreeRoom(
-         db: FirebaseFirestore.Firestore,
-         trs: FirebaseFirestore.Transaction,
-         size: number): Promise<FirebaseFirestore.QuerySnapshot> {
-   
-         return trs.get(db.collection('rooms')
-           .where('full', '==', false)
-           .where('size', '==', size)
-           .limit(1));
-      }
-   }
+function formatTwoDigits(value){
+    if(value < 10){
+        return "0" + value;
+    }else{
+        return value;
+    }
+}
 
-export const playerCreated = functions.firestore
- .document('players/{playerId}')
- .onCreate((snap, context) => {
-   const player: Player = <Player> snap.data();
-   const playerId = context.params.playerId;
-   const db = admin.firestore();
+exports.insertDictionaries = functions.storage.object().onFinalize(async (object)  => {  
+    const filePath = object.name;
+    if(filePath.startsWith("toUpload") && filePath.endsWith("json")){
+        console.log(filePath);
+        await admin.storage().bucket().file(filePath)
+        .download().then((contents) => {
+            let finishedOk = true;
+            const date = new Date;
+            let time = parseInt("" + date.getUTCFullYear() 
+            + formatTwoDigits((date.getUTCMonth() + 1))
+            + formatTwoDigits(date.getUTCDate())
+            + formatTwoDigits(date.getUTCHours())
+            + formatTwoDigits(date.getUTCMinutes()));
+            (async () => {
+                try{
+                    const data = JSON.parse(contents.toString('utf8'));         
+                    const db = admin.database();
+                    const ref = db.ref("dictionary");
 
-   return db.runTransaction((trs: FirebaseFirestore.Transaction) => {
-      return Rooms.findFreeRoom(db, trs, player.players)
-                   .then((roomResult: FirebaseFirestore.QuerySnapshot) => {
-      var roomId;
-      if (roomResult.size == 1) {
-         // a room was found, add the player to it
-         const roomSnapshot: FirebaseFirestore.DocumentSnapshot = roomResult.docs[0];
-         const room: Room = <Room> roomSnapshot.data();
-         const players = [...room.players, playerId];
-         const full = players.length == room.size;
-         const newRoomData: Room = { full, size: room.size, players };
-         trs.set(roomSnapshot.ref, newRoomData);
-         roomId = roomSnapshot.id;
-      } else {
-         // no room was found, create a new room with the player
-         const players = [playerId];
-         const roomRef: FirebaseFirestore.DocumentReference = db.collection('rooms').doc();
-         trs.set(roomRef, { full: false, size: player.players, players });
-         roomId = roomRef.id;
-      }
-      // then add a reference to the room in the player document
-      trs.update(db.collection('players').doc(playerId), { roomId });
-      });
-   });
-  });
+                    for (let i = 0; i < data.dictionary.length && finishedOk; i++){
+                        if(i % 100 == 0){
+                            console.log(i + " / " + data.dictionary.length + " inserted");
+                        }
+                        const obj = data.dictionary[i];                    
+
+                        await ref.child(obj.language+"_"+obj.word)
+                        .set({
+                            word: obj.word,
+                            language: obj.language,
+                            createdAt: time
+                        }).then(() => {
+                            finishedOk = true;   
+                            //console.log("Document written");
+                        }).catch(function(error) {
+                            finishedOk = false;                   
+                            console.error("Error adding document: ", error);
+                        });
+                    };
+                    if(finishedOk){
+                        await admin.storage().bucket().file(filePath)
+                        .move(filePath.replace("toUpload/", "done/"), function(err, destinationFile, apiResponse) {
+                            if(!err){
+                                console.log(filePath + " moved correctly");
+                            }else{
+                                console.error("Error moving "+ filePath, err);
+                            }
+                        });         
+                        //TODO add send notification         
+                    }else{
+                        console.error("Error during insertion. ReUpload the file " + filePath);
+                    }
+                }catch(error){
+                    finishedOk = false;   
+                    console.error("error en catch" , error);
+                }
+            })().catch(e => console.log("Caught: " + e));
+        });
+    }    
+});

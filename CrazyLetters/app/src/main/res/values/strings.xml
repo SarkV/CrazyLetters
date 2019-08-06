@@ -2,6 +2,8 @@
     <string name="app_name">CrazyLetters</string>
     <string name="app_name_main">Crazy Letters</string>
 
+    <string name="title_game_config">Game Configuration</string>
+
     <string name="single_player">Single Player</string>
     <string name="multiplayer">Multiplayer</string>
     <string name="invitations">Invitations</string>
@@ -12,6 +14,16 @@
     <string name="settings">Settings</string>
     <string name="leaderboard">Leaderboard</string>
     <string name="sign_out">Sign Out</string>
+    <string name="loading">Loading</string>
+    <string name="play">Play</string>
+    <string name="game_name">Game Name</string>
+    <string name="languages">Languages</string>
+
+    <!--Dialogs-->
+    <string name="error_title">Error</string>
+    <string name="error_login">There has been an error in the sign up. Try it again later!</string>
+    <string name="retry">Retry</string>
+    <string name="exit">Exit</string>
 
     <string name="infinite" translatable="false">\u221E</string>
 
@@ -30,6 +42,7 @@
     <string name="show_notifications">Show Notifications</string>
     <string name="allow_invitations">Allow Invitations</string>
     <string name="save">Save</string>
+    <string name="load_game">Load Game</string>
     <string name="cancel">Cancel</string>
 
     <string name="please_wait">Please wait&#8230;</string>
