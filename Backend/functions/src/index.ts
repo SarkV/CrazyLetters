@@ -56,8 +56,7 @@ exports.insertDictionaries = functions.storage.object().onFinalize(async (object
                             }else{
                                 console.error("Error moving "+ filePath, err);
                             }
-                        });         
-                        //TODO add send notification         
+                        });               
                     }else{
                         console.error("Error during insertion. ReUpload the file " + filePath);
                     }

@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.GameListActivity"></activity>
+        <activity android:name=".activities.LanguageSelectionActivity"></activity>
+        <activity android:name=".activities.ListBaseActivity" />
+        <activity android:name=".activities.GameListActivity" />
         <activity android:name=".activities.GameDefinitionActivity" />
         <activity android:name=".activities.GameActivity" />
         <activity android:name=".activities.SettingsActivity" />
@@ -28,13 +30,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-        <service
-            android:name=".services.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
     </application>
 
 </manifest>

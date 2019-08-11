@@ -3,6 +3,8 @@ package com.avtdev.crazyletters.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
@@ -68,6 +70,8 @@ public class Utils {
                 sharedPreferences.putInt(key, (int) value);
             }else if(value instanceof Float){
                 sharedPreferences.putFloat(key, (float) value);
+            }else if(value instanceof Long){
+                sharedPreferences.putLong(key, (long) value);
             }else{
                 sharedPreferences.putString(key, String.valueOf(value));
             }
@@ -77,7 +81,7 @@ public class Utils {
         }
     }
 
-    public static String getStringSharedPreferences(Context context, String key, String defaultValue){
+    public static String getStringSharedPreferences(Context context, String key, @NonNull String defaultValue){
         String value = defaultValue;
         try{
             SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(), Context.MODE_PRIVATE);
@@ -88,7 +92,7 @@ public class Utils {
         return value;
     }
 
-    public static Boolean getBooleanSharedPreferences(Context context, String key, Boolean defaultValue){
+    public static Boolean getBooleanSharedPreferences(Context context, String key, @NonNull Boolean defaultValue){
         Boolean value = defaultValue;
         try{
             SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(), Context.MODE_PRIVATE);
@@ -99,7 +103,7 @@ public class Utils {
         return value;
     }
 
-    public static Integer getIntSharedPreferences(Context context, String key, Integer defaultValue){
+    public static Integer getIntSharedPreferences(Context context, String key, @NonNull Integer defaultValue){
         Integer value = defaultValue;
         try{
             SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(), Context.MODE_PRIVATE);
@@ -110,7 +114,7 @@ public class Utils {
         return value;
     }
 
-    public static Long getLongSharedPreferences(Context context, String key, Long defaultValue){
+    public static Long getLongSharedPreferences(Context context, String key, @NonNull Long defaultValue){
         Long value = defaultValue;
         try{
             SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(), Context.MODE_PRIVATE);

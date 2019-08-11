@@ -1,27 +1,26 @@
 package com.avtdev.crazyletters.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
+import com.avtdev.crazyletters.models.response.GameModeResponse;
 import com.avtdev.crazyletters.services.ConstantGS;
 import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.services.RealmManager;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.Logger;
 import com.avtdev.crazyletters.utils.Utils;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,10 +36,6 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-/* TODO Notifications
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
-
-        });*/
         getData();
     }
 
@@ -49,13 +44,13 @@ public class SplashActivity extends BaseActivity {
         DatabaseReference dictionary = database.getReference(Constants.Firebase.DICTIONARY);
         DatabaseReference gameMode = database.getReference(Constants.Firebase.GAMEMODE);
 
-        Long lastSincroDictionary = Utils.getLongSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), null);
-        Long lastSincroGameModes = Utils.getLongSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_GAME_MODES.name(), null);
+        Long lastSincroDictionary = Utils.getLongSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), 0L);
+        Long lastSincroGameModes = Utils.getLongSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_GAME_MODES.name(), 0L);
 
         Long currentTime = Utils.getUTCDate();
 
         Query queryDictionary = dictionary;
-        if(lastSincroDictionary != null){
+        if(lastSincroDictionary > 0){
             queryDictionary = dictionary.orderByChild(Constants.Firebase.CREATEDAT).startAt(lastSincroDictionary);
         }
         queryDictionary.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -81,21 +76,18 @@ public class SplashActivity extends BaseActivity {
                 }catch (Exception e){
                     Logger.e(TAG, "dictionary_onDataChange", e.getMessage());
                 }
-
-                numberOfSync--;
                 login();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Logger.e(TAG, "dictionary_onCancelled", databaseError.getCode(), databaseError.getMessage());
-                numberOfSync--;
                 login();
             }
         });
 
         Query queryGameMode = gameMode;
-        if(lastSincroGameModes != null){
-            queryGameMode = gameMode.orderByChild(Constants.Firebase.CREATEDAT).startAt(lastSincroDictionary);
+        if(lastSincroGameModes > 0){
+            queryGameMode = gameMode.orderByChild(Constants.Firebase.CREATEDAT).startAt(lastSincroGameModes);
         }
         queryGameMode.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -103,35 +95,37 @@ public class SplashActivity extends BaseActivity {
                 Logger.d(TAG, "gameMode_onDataChange", dataSnapshot.getChildrenCount());
 
                 try{
-/*
-                    List<DictionaryResponse> listResponse = new ArrayList<>();
-                    Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                    while(iterator.hasNext()){
-                        DataSnapshot data = iterator.next();
-                        DictionaryResponse response = data.getValue(DictionaryResponse.class);
+
+                    List<GameModeResponse> listResponse = new ArrayList<>();
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        GameModeResponse response = data.getValue(GameModeResponse.class);
+                        if(response == null){
+                            throw new Exception("Null response in GameModeResponse: " + data.toString());
+                        }
                         response.setId(data.getKey());
                         listResponse.add(response);
                     }
-    */
+                    if(listResponse.size() > 0)
+                        RealmManager.getInstance(SplashActivity.this).saveCustomGames(listResponse);
+
                     Utils.setSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_GAME_MODES.name(), currentTime);
 
                 }catch (Exception e){
                     Logger.e(TAG, "gameMode_onDataChange", e.getMessage());
                 }
 
-                numberOfSync--;
                 login();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Logger.e(TAG, "gameMode_onCancelled", databaseError.getCode(), databaseError.getMessage());
-                numberOfSync--;
                 login();
             }
         });
     }
 
     private void login(){
+        numberOfSync--;
         if(numberOfSync == 0){
             GoogleService.getInstance(this).signInSilently((Constants.SignInStatus status) -> {
                 if(status != null && status.equals(Constants.SignInStatus.OK)){

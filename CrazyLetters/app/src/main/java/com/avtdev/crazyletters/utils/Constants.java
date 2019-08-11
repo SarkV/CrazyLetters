@@ -31,6 +31,7 @@ public class Constants {
 
     public enum Extras {
         GAME,
-        GAME_MODE
+        GAME_MODE,
+        LANGUAGE_LIST
     }
 }

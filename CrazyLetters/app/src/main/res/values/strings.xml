@@ -22,6 +22,8 @@
     <!--Dialogs-->
     <string name="error_title">Error</string>
     <string name="error_login">There has been an error in the sign up. Try it again later!</string>
+    <string name="error_game_name">You have to set a game name to save it.</string>
+    <string name="accept">Accept</string>
     <string name="retry">Retry</string>
     <string name="exit">Exit</string>
 
@@ -36,6 +38,9 @@
     <string name="letter_type_diag_move">Diagonal Movements</string>
     <string name="letter_type_show_hide">Show and Hide</string>
 
+    <string name="accents">Remove accents from letters</string>
+
+    <string name="all">All</string>
     <string name="time">Time</string>
 
     <!--Setings options-->

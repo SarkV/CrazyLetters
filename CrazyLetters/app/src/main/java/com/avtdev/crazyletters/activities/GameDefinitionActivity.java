@@ -1,12 +1,11 @@
 package com.avtdev.crazyletters.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -15,16 +14,15 @@ import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.services.RealmManager;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.GameConstants;
-import com.avtdev.crazyletters.utils.Logger;
+import com.shawnlin.numberpicker.NumberPicker;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class GameDefinitionActivity extends BaseActivity implements View.OnClickListener {
 
     private static String TAG = "GameDefinitionActivity";
-    public static int SELECT_LANGUAGE_CODE = 100;
-    public static int LOAD_GAME_CODE = 101;
+    public final static int SELECT_LANGUAGE_CODE = 100;
+    public final static int LOAD_GAME_CODE = 101;
 
     Game mGame;
 
@@ -43,7 +41,9 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
     TextView mLanguagesTV;
     String[] mLanguagesList;
 
-    NumberPicker mTimeNP;
+    CheckBox mAccent;
+
+    NumberPicker mTimePicker;
 
     boolean modified = true;
 
@@ -66,9 +66,7 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
         mLanguagesTV = findViewById(R.id.tvLanguages);
 
-        mTimeNP = findViewById(R.id.npTime);
-
-        setNumberPickerTextColor(mTimeNP, getResources().getColor(R.color.colorSecondaryLight));
+        mTimePicker = findViewById(R.id.timePicker);
 
         findViewById(R.id.btnLoadGame).setOnClickListener(this);
         findViewById(R.id.btnSaveGame).setOnClickListener(this);
@@ -77,6 +75,10 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
         initializeVelocity();
 
+        initializeTimePicker();
+    }
+
+    private void initializeTimePicker(){
         String[] timeValues = new String[61];
         for(int i = 0; i < timeValues.length; i++){
             if(i == 0){
@@ -85,30 +87,10 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                 timeValues[i] = String.valueOf(i);
             }
         }
-        mTimeNP.setDisplayedValues(timeValues);
-        mTimeNP.setMinValue(0);
-        mTimeNP.setMaxValue(timeValues.length - 1);
-    }
-
-
-    public static void setNumberPickerTextColor(NumberPicker numberPicker, int color)
-    {
-
-        try{
-            Field selectorWheelPaintField = numberPicker.getClass()
-                    .getDeclaredField("mSelectorWheelPaint");
-            selectorWheelPaintField.setAccessible(true);
-            ((Paint)selectorWheelPaintField.get(numberPicker)).setColor(color);
-        }
-        catch(Exception e){
-            Logger.e(TAG, "setNumberPickerTextColor", e);
-        }
-        for(int i = 0; i < numberPicker.getChildCount(); i++){
-            View child = numberPicker.getChildAt(i);
-            if(child instanceof EditText)
-                ((EditText)child).setTextColor(color);
-        }
-        numberPicker.invalidate();
+        mTimePicker.setMinValue(0);
+        mTimePicker.setMaxValue(timeValues.length - 1);
+        mTimePicker.setDisplayedValues(timeValues);
+        mTimePicker.setValue(0);
     }
 
     private void initializeVelocity(){
@@ -160,7 +142,7 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
         if(v.getId() == R.id.btnLoadGame) {
             startActivityForResult(new Intent(this, GameListActivity.class), LOAD_GAME_CODE);
         }else if(v.getId() == R.id.btnSelectLanguages) {
-            startActivityForResult(new Intent(this, GameListActivity.class), SELECT_LANGUAGE_CODE);
+            startActivityForResult(new Intent(this, LanguageSelectionActivity.class), SELECT_LANGUAGE_CODE);
         }else{
             String name = mGameName.getEditableText().toString();
             Integer[] vel = new Integer[]{
@@ -174,28 +156,77 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
             if(mDiagMove.isChecked()) lettersTypes.add(GameConstants.LettersType.DIAGONAL_MOVE);
             if(mShowHide.isChecked()) lettersTypes.add(GameConstants.LettersType.SHOW_HIDE);
 
-            int time = mTimeNP.getValue();
+            int time = mTimePicker.getValue();
 
             if(v.getId() == R.id.btnSaveGame){
-                if(mGame == null || (!name.isEmpty() && !name.equals(mGame.getName()))){
-                    RealmManager.getInstance(this).saveGame(name, vel, (GameConstants.LettersType[]) lettersTypes.toArray(), mLanguagesList, time);
-                }else{
+                if(!name.isEmpty() && (mGame == null || !name.equals(mGame.getName()))){
+                    RealmManager.getInstance(this).saveGame(
+                            name,
+                            vel,
+                            lettersTypes.toArray(new GameConstants.LettersType[0]),
+                            mLanguagesList,
+                            !mAccent.isChecked(),
+                            time);
+                }else if(!name.isEmpty()){
                     mGame.setVelocity(vel);
-                    mGame.setLettersType((GameConstants.LettersType[]) lettersTypes.toArray());
+                    mGame.setLettersType(lettersTypes.toArray(new GameConstants.LettersType[0]));
                     mGame.setLanguages(mLanguagesList);
                     mGame.setTime(time);
 
                     RealmManager.getInstance(this).updateGame(mGame);
+                }else{
+                    showOneBtnDialog(R.string.error_title,
+                            R.string.error_game_name,
+                            R.string.accept,
+                            (dialog, which) -> {dialog.dismiss();});
                 }
             }else{
                 if(modified){
-                    RealmManager.getInstance(this).saveGame(null, vel, (GameConstants.LettersType[]) lettersTypes.toArray(), mLanguagesList, time);
+                    RealmManager.getInstance(this).saveGame(
+                            null,
+                            vel,
+                            lettersTypes.toArray(new GameConstants.LettersType[0]),
+                            mLanguagesList,
+                            !mAccent.isChecked(),
+                            time);
                 }else{
                     RealmManager.getInstance(this).saveGame(mGame);
                 }
                 Intent intent = new Intent(this, GameActivity.class);
                 startActivity(intent);
                 finish();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if(res == RESULT_OK){
+            switch (req){
+                case LOAD_GAME_CODE:
+
+                break;
+                case SELECT_LANGUAGE_CODE:
+                    if(data != null && data.getExtras() != null){
+                        ArrayList<String> languages = data.getExtras().getStringArrayList(Constants.Extras.LANGUAGE_LIST.name());
+                        if(languages != null && !languages.isEmpty() && "".equals(languages.get(0))){
+                            mLanguagesList = languages.toArray(mLanguagesList);
+                            String languagesString = null;
+                            for (String lan : mLanguagesList){
+                                if(languagesString == null){
+                                    languagesString = lan;
+                                }else{
+                                    languagesString += ";"+lan;
+                                }
+                            }
+                            mLanguagesTV.setText(languagesString);
+                        }else{
+                            mLanguagesList = new String[]{""};
+                            mLanguagesTV.setText(R.string.all);
+                        }
+                    }
+                break;
             }
         }
     }

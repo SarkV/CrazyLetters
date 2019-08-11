@@ -19,6 +19,7 @@ public class Game extends RealmObject {
         public static final String VELOCITY = "velocity";
         public static final String LETTERS_TYPE = "lettersType";
         public static final String LANGUAGES = "languages";
+        public static final String ACCENT = "accent";
         public static final String TIME = "time";
         public static final String CUSTOM = "custom";
         public static final String LAST_USED = "lastUsed";
@@ -40,6 +41,9 @@ public class Game extends RealmObject {
     @SerializedName(PROPERTIES.LANGUAGES)
     private String languages;
 
+    @SerializedName(PROPERTIES.ACCENT)
+    private boolean accent;
+
     @SerializedName(PROPERTIES.TIME)
     private int time;
 
@@ -52,12 +56,13 @@ public class Game extends RealmObject {
     public Game() {
     }
 
-    public Game(String name, Integer[] velocity, GameConstants.LettersType[] lettersType, String[] languages, int time, boolean custom) {
+    public Game(String name, Integer[] velocity, Object[] lettersType, String[] languages, boolean accent, int time, boolean custom) {
         this.id = UUID.randomUUID().getMostSignificantBits();
         this.name = name;
         setVelocity(velocity);
         setLettersType(lettersType);
         setLanguages(languages);
+        this.accent = accent;
         this.time = time;
         this.custom = custom;
         this.lastUsed = new Date();
@@ -91,7 +96,7 @@ public class Game extends RealmObject {
         return Utils.stringToList(this.lettersType, GameConstants.LettersType.class);
     }
 
-    public void setLettersType(GameConstants.LettersType[] lettersType) {
+    public void setLettersType(Object[] lettersType) {
         this.lettersType = Utils.listToString(Arrays.asList(lettersType));
     }
 
@@ -101,6 +106,14 @@ public class Game extends RealmObject {
 
     public void setLanguages(String[] language) {
         this.languages = Utils.listToString(Arrays.asList(language));
+    }
+
+    public boolean hasAccent() {
+        return accent;
+    }
+
+    public void setAccent(boolean accent) {
+        this.accent = accent;
     }
 
     public int getTime() {
