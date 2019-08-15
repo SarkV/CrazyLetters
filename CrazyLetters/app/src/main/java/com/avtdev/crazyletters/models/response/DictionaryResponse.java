@@ -18,6 +18,9 @@ public class DictionaryResponse{
     @SerializedName("language")
     private String language;
 
+    @SerializedName("createdAt")
+    private String createdAt;
+
     public String getId() {
         return id;
     }
@@ -40,5 +43,13 @@ public class DictionaryResponse{
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }

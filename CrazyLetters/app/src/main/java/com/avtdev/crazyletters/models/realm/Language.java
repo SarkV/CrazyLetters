@@ -3,6 +3,7 @@ package com.avtdev.crazyletters.models.realm;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 public class Language extends RealmObject {
@@ -19,7 +20,11 @@ public class Language extends RealmObject {
     @SerializedName(PROPERTIES.OCCURENCES)
     private long ocurrences;
 
+    @Ignore
+    private boolean selected;
+
     public Language() {
+        selected = false;
     }
 
     public Language(String language) {
@@ -45,5 +50,13 @@ public class Language extends RealmObject {
 
     public void setOcurrences(long ocurrences) {
         this.ocurrences = ocurrences;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

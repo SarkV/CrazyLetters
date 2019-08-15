@@ -102,7 +102,8 @@ public class RealmManager {
     }
 
     public List<Language> getLanguages(){
-        return getRealm().where(Language.class).findAll();
+        Realm realm = getRealm();
+        return realm.copyFromRealm(realm.where(Language.class).findAll());
     }
 
     public List<Dictionary> getDictionary(String language){
