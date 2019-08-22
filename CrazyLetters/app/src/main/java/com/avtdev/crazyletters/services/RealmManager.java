@@ -84,6 +84,12 @@ public class RealmManager {
     }
 
     private void updateLanguages(Realm realm){
+        long globalWords = realm.where(Dictionary.class)
+                .isNull(Dictionary.PROPERTIES.LANGUAGE)
+                .or()
+                .isEmpty(Dictionary.PROPERTIES.LANGUAGE)
+                .count();
+
         RealmResults<Dictionary> dictionaries = realm.where(Dictionary.class)
                 .isNotNull(Dictionary.PROPERTIES.LANGUAGE)
                 .distinct(Dictionary.PROPERTIES.LANGUAGE).findAll();
@@ -92,7 +98,7 @@ public class RealmManager {
         List<Language> languages = new ArrayList<>();
         for(Dictionary dic : dictionaries){
             Language lan = new Language(dic.getLanguage());
-            lan.setOcurrences(realm.where(Dictionary.class).equalTo(Dictionary.PROPERTIES.LANGUAGE, dic.getLanguage()).count());
+            lan.setOcurrences(realm.where(Dictionary.class).equalTo(Dictionary.PROPERTIES.LANGUAGE, dic.getLanguage()).count() + globalWords);
             languages.add(lan);
         }
 
@@ -150,6 +156,13 @@ public class RealmManager {
                 game.getTime());
     }
 
+    public void removeGame(long id){
+        Game game = getRealm().where(Game.class).equalTo(Game.PROPERTIES.ID, id).findFirst();
+        if(game != null){
+            game.deleteFromRealm();
+        }
+    }
+
     public void saveGame(String name, Integer[] velocity, GameConstants.LettersType[] lettersType, String[] language, boolean accent, int time){
         getRealm().executeTransaction(realm -> {
             Game game = realm.where(Game.class)
@@ -189,9 +202,10 @@ public class RealmManager {
     }
 
     public List<Game> getGames(){
-        return getRealm().where(Game.class)
+        Realm realm = getRealm();
+        return realm.copyFromRealm(realm.where(Game.class)
                 .isNotNull(Game.PROPERTIES.NAME)
                 .sort(Game.PROPERTIES.LAST_USED, Sort.DESCENDING)
-                .findAll();
+                .findAll());
     }
 }

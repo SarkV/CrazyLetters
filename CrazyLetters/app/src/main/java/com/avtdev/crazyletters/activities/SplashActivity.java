@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
 import com.avtdev.crazyletters.models.response.GameModeResponse;
@@ -23,7 +24,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class SplashActivity extends BaseActivity {
@@ -127,14 +127,19 @@ public class SplashActivity extends BaseActivity {
     private void login(){
         numberOfSync--;
         if(numberOfSync == 0){
-            GoogleService.getInstance(this).signInSilently((Constants.SignInStatus status) -> {
-                if(status != null && status.equals(Constants.SignInStatus.OK)){
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                    finish();
-                }else{
-                    GoogleService.getInstance(this).startSignInIntent();
-                };
-            });
+            if(BuildConfig.GOOGLE_SERVICE) {
+                GoogleService.getInstance(this).signInSilently((Constants.SignInStatus status) -> {
+                    if (status != null && status.equals(Constants.SignInStatus.OK)) {
+                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                        finish();
+                    } else {
+                        GoogleService.getInstance(this).startSignInIntent();
+                    }
+                });
+            }else{
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
+            }
         }
     }
 

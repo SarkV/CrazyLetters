@@ -88,6 +88,10 @@ public class Game extends RealmObject {
         return Utils.stringToList(this.velocity, Integer.class);
     }
 
+    public String getVelocityString() {
+        return this.velocity;
+    }
+
     public void setVelocity(Integer[] velocity) {
         this.velocity = Utils.listToString(Arrays.asList(velocity));
     }
@@ -96,12 +100,20 @@ public class Game extends RealmObject {
         return Utils.stringToList(this.lettersType, GameConstants.LettersType.class);
     }
 
+    public String getLettersTypeString() {
+        return this.lettersType;
+    }
+
     public void setLettersType(Object[] lettersType) {
         this.lettersType = Utils.listToString(Arrays.asList(lettersType));
     }
 
     public String[] getLanguages() {
         return Utils.stringToList(this.languages, String.class);
+    }
+
+    public String getLanguagesString() {
+        return this.languages;
     }
 
     public void setLanguages(String[] language) {

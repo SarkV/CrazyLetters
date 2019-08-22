@@ -29,6 +29,7 @@
 
     <string name="infinite" translatable="false">\u221E</string>
 
+    <string name="velocity">Velocity</string>
     <string name="velocity_min">Min Velocity</string>
     <string name="velocity_max">Max Velocity</string>
 
@@ -37,6 +38,8 @@
     <string name="letter_type_vert_move">Vertical Movements</string>
     <string name="letter_type_diag_move">Diagonal Movements</string>
     <string name="letter_type_show_hide">Show and Hide</string>
+
+    <string name="last_used">Last Used</string>
 
     <string name="accents">Remove accents from letters</string>
     <string name="language">Language</string>

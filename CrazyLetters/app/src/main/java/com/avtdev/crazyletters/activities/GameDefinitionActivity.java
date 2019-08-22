@@ -1,6 +1,5 @@
 package com.avtdev.crazyletters.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +13,7 @@ import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.services.RealmManager;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.GameConstants;
+import com.avtdev.crazyletters.utils.Logger;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.ArrayList;
@@ -70,8 +70,15 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
         findViewById(R.id.btnLoadGame).setOnClickListener(this);
         findViewById(R.id.btnSaveGame).setOnClickListener(this);
-        findViewById(R.id.btnSelectLanguages).setOnClickListener(this);
         findViewById(R.id.btnPlay).setOnClickListener(this);
+
+        if(RealmManager.getInstance(this).getLanguages().size() > 2){
+            findViewById(R.id.btnSelectLanguages).setOnClickListener(this);
+            mLanguagesTV.setOnClickListener(this);
+        }else{
+            findViewById(R.id.btnSelectLanguages).setVisibility(View.INVISIBLE);
+        }
+
 
         initializeVelocity();
 
@@ -141,8 +148,10 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
     public void onClick(View v) {
         if(v.getId() == R.id.btnLoadGame) {
             startActivityForResult(new Intent(this, GameListActivity.class), LOAD_GAME_CODE);
-        }else if(v.getId() == R.id.btnSelectLanguages) {
-            startActivityForResult(new Intent(this, LanguageSelectionActivity.class), SELECT_LANGUAGE_CODE);
+        }else if(v.getId() == R.id.btnSelectLanguages || v.getId() == mLanguagesTV.getId()) {
+            Intent i = new Intent(this, LanguageSelectionActivity.class);
+            i.putExtra(Constants.Extras.LANGUAGE_LIST.name(), mLanguagesTV.getText().toString());
+            startActivityForResult(i, SELECT_LANGUAGE_CODE);
         }else{
             String name = mGameName.getEditableText().toString();
             Integer[] vel = new Integer[]{
@@ -208,24 +217,28 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
                 break;
                 case SELECT_LANGUAGE_CODE:
-                    if(data != null && data.getExtras() != null){
-                        ArrayList<String> languages = data.getExtras().getStringArrayList(Constants.Extras.LANGUAGE_LIST.name());
-                        if(languages != null && !languages.isEmpty() && "".equals(languages.get(0))){
-                            mLanguagesList = languages.toArray(mLanguagesList);
-                            String languagesString = null;
-                            for (String lan : mLanguagesList){
-                                if(languagesString == null){
-                                    languagesString = lan;
-                                }else{
-                                    languagesString += ";"+lan;
+                    try{
+                        if(data != null && data.getExtras() != null){
+                            ArrayList<String> languages = data.getExtras().getStringArrayList(Constants.Extras.LANGUAGE_LIST.name());
+                            if(languages != null && !languages.isEmpty() && !"".equals(languages.get(0))){
+                                StringBuilder stringBuilder = new StringBuilder();
+                                mLanguagesList = languages.toArray(new String[languages.size()]);
+                                for (String lan : mLanguagesList){
+                                    if(stringBuilder.length() > 0){
+                                        stringBuilder.append(";");
+                                    }
+                                    stringBuilder.append(lan);
                                 }
+                                mLanguagesTV.setText(stringBuilder.toString());
+                            }else{
+                                mLanguagesList = new String[]{""};
+                                mLanguagesTV.setText(R.string.all);
                             }
-                            mLanguagesTV.setText(languagesString);
-                        }else{
-                            mLanguagesList = new String[]{""};
-                            mLanguagesTV.setText(R.string.all);
                         }
+                    }catch (Exception ex){
+                        Logger.e(TAG, "onActivityResult - Select Language", ex);
                     }
+
                 break;
             }
         }

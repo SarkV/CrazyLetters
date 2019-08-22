@@ -2,11 +2,6 @@ package com.avtdev.crazyletters.models.response;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 public class DictionaryResponse{
 
     @SerializedName("id")
@@ -19,7 +14,7 @@ public class DictionaryResponse{
     private String language;
 
     @SerializedName("createdAt")
-    private String createdAt;
+    private Long createdAt;
 
     public String getId() {
         return id;
@@ -45,11 +40,11 @@ public class DictionaryResponse{
         this.language = language;
     }
 
-    public String getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 }

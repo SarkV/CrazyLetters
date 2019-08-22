@@ -1,6 +1,10 @@
 package com.avtdev.crazyletters.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +17,7 @@ import com.avtdev.crazyletters.utils.Constants;
 
 import java.util.List;
 
-public class LanguageSelectionActivity extends ListBaseActivity {
+public class LanguageSelectionActivity extends ListBaseActivity implements View.OnClickListener {
 
     RecyclerView mRecyclerView;
 
@@ -23,6 +27,8 @@ public class LanguageSelectionActivity extends ListBaseActivity {
         setContentView(R.layout.activity_language_selection);
 
         setToolbar(findViewById(R.id.toolbar));
+
+        findViewById(R.id.btnSaveLanguage).setOnClickListener(this);
 
         mRecyclerView = findViewById(R.id.rvLanguages);
 
@@ -54,6 +60,16 @@ public class LanguageSelectionActivity extends ListBaseActivity {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mRecyclerView.setAdapter(new LanguageListAdapter(this, listLanguages));
+        mRecyclerView.setAdapter(new LanguageListAdapter(listLanguages));
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.btnSaveLanguage){
+            Intent i = new Intent();
+            i.putStringArrayListExtra(Constants.Extras.LANGUAGE_LIST.name(), ((LanguageListAdapter) mRecyclerView.getAdapter()).getSelectedLanguages());
+            setResult(RESULT_OK, i);
+            finish();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.avtdev.crazyletters.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +16,19 @@ import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.models.realm.Language;
 import com.avtdev.crazyletters.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class LanguageListAdapter extends RecyclerView.Adapter {
+public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.ViewHolder> {
 
-    Context mContext;
-    List<Language> mList;
+    private List<Language> mList;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView language;
-        public TextView ocurrences;
-        public ImageView selected;
-        public ViewHolder(View view) {
+    class ViewHolder extends RecyclerView.ViewHolder {
+        TextView language;
+        TextView ocurrences;
+        ImageView selected;
+        ViewHolder(View view) {
             super(view);
             language = view.findViewById(R.id.tvLanguage);
             ocurrences = view.findViewById(R.id.tvOcurrences);
@@ -34,38 +36,83 @@ public class LanguageListAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public LanguageListAdapter(Context context, List<Language> list) {
-        this.mContext = context;
+    public LanguageListAdapter(List<Language> list) {
         this.mList = list;
 
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View holder = LayoutInflater.from(parent.getContext()).inflate(R.layout.language_row, parent, false );
-        return new ViewHolder(holder);
+
+        ViewHolder viewHolder = new ViewHolder(holder);
+        viewHolder.language.setTypeface(null, Typeface.NORMAL);
+        viewHolder.ocurrences.setTypeface(null, Typeface.NORMAL);
+
+        return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if(position > 0){
-            if(Utils.isNull(mList.get(position - 1).getLanguage())){
-                ((ViewHolder) holder).language.setText(R.string.all);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        if(Utils.isNull(mList.get(position).getLanguage())){
+            holder.language.setText(R.string.all);
+        }else{
+            Locale loc = new Locale(mList.get(position ).getLanguage());
+            holder.language.setText(loc.getDisplayLanguage());
+        }
+        holder.ocurrences.setText(String.valueOf(mList.get(position ).getOcurrences()));
+        if(mList.get(position ).isSelected()){
+            holder.selected.setVisibility(View.VISIBLE);
+        }else{
+            holder.selected.setVisibility(View.INVISIBLE);
+        }
+
+        holder.itemView.setOnClickListener(v -> validateClick(position));
+    }
+
+    private void validateClick(int position){
+        if(position == 0){
+            if(mList.get(position).isSelected()){
+                mList.get(position).setSelected(false);
             }else{
-                ((ViewHolder) holder).language.setText(mList.get(position - 1).getLanguage());
+                for(Language lan : mList){
+                    lan.setSelected(false);
+                }
+                mList.get(position).setSelected(true);
             }
-            ((ViewHolder) holder).ocurrences.setText(String.valueOf(mList.get(position - 1).getOcurrences()));
-            if(mList.get(position - 1).isSelected()){
-                ((ViewHolder) holder).selected.setVisibility(View.VISIBLE);
-            }else{
-                ((ViewHolder) holder).selected.setVisibility(View.INVISIBLE);
+        }else{
+            if(mList.get(position).isSelected()){
+                mList.get(position).setSelected(false);
+            }else {
+                if (mList.get(0).isSelected()) {
+                    for(Language lan : mList){
+                        lan.setSelected(true);
+                    }
+                    mList.get(0).setSelected(false);
+                    mList.get(position).setSelected(false);
+                }else{
+                    mList.get(position).setSelected(true);
+                }
             }
         }
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return mList != null ? mList.size() + 1 : 1;
+        return mList != null ? mList.size() : 0;
+    }
+
+    public ArrayList<String> getSelectedLanguages(){
+        ArrayList<String> list = new ArrayList<>();
+        if(!mList.get(0).isSelected()) {
+            for (Language lan : mList) {
+                if(lan.isSelected()){
+                    list.add(lan.getLanguage());
+                }
+            }
+        }
+        return list;
     }
 }
