@@ -55,14 +55,15 @@ public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if(Utils.isNull(mList.get(position).getLanguage())){
+        Language lan = mList.get(position);
+        if(Utils.isNull(lan.getLanguage())){
             holder.language.setText(R.string.all);
         }else{
-            Locale loc = new Locale(mList.get(position ).getLanguage());
+            Locale loc = new Locale(lan.getLanguage());
             holder.language.setText(loc.getDisplayLanguage());
         }
-        holder.ocurrences.setText(String.valueOf(mList.get(position ).getOcurrences()));
-        if(mList.get(position ).isSelected()){
+        holder.ocurrences.setText(String.valueOf(lan.getOcurrences()));
+        if(lan.isSelected()){
             holder.selected.setVisibility(View.VISIBLE);
         }else{
             holder.selected.setVisibility(View.INVISIBLE);

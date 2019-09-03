@@ -43,7 +43,7 @@ public class LanguageSelectionActivity extends ListBaseActivity implements View.
         boolean all = true;
 
         if(selectedLanguages != null && !selectedLanguages.isEmpty()){
-            String[] splits = selectedLanguages.split(";");
+            String[] splits = selectedLanguages.split(Constants.ARRAY_SEPARATOR);
 
             for(String s : splits){
                 for(int i = 0; i < listLanguages.size(); i++){

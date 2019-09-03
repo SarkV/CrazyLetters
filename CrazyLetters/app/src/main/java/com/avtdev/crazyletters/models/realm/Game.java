@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.internal.fields.FieldDescriptor;
 
 public class Game extends RealmObject {
 
@@ -21,7 +22,7 @@ public class Game extends RealmObject {
         public static final String LANGUAGES = "languages";
         public static final String ACCENT = "accent";
         public static final String TIME = "time";
-        public static final String CUSTOM = "custom";
+        public static final String DEFAULT_GAME = "defaultGame";
         public static final String LAST_USED = "lastUsed";
     }
 
@@ -50,8 +51,8 @@ public class Game extends RealmObject {
     @SerializedName(PROPERTIES.LAST_USED)
     private Date lastUsed;
 
-    @SerializedName(PROPERTIES.CUSTOM)
-    private boolean custom;
+    @SerializedName(PROPERTIES.DEFAULT_GAME)
+    private boolean defaultGame;
 
     public Game() {
     }
@@ -64,7 +65,7 @@ public class Game extends RealmObject {
         setLanguages(languages);
         this.accent = accent;
         this.time = time;
-        this.custom = custom;
+        this.defaultGame = custom;
         this.lastUsed = new Date();
     }
 
@@ -136,12 +137,12 @@ public class Game extends RealmObject {
         this.time = time;
     }
 
-    public boolean isCustom() {
-        return custom;
+    public boolean isDefaultGame() {
+        return defaultGame;
     }
 
-    public void setCustom(boolean custom) {
-        this.custom = custom;
+    public void setDefaultGame(boolean defaultGame) {
+        this.defaultGame = defaultGame;
     }
 
     public Date getLastUsed() {

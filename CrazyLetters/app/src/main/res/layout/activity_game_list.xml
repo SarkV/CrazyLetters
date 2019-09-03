@@ -17,11 +17,28 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <include
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:layout_margin="@dimen/definition_inter_margin"
+        layout="@layout/game_row"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorSecondaryLight"
+        android:layout_below="@id/header"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGames"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar">
+        android:layout_below="@id/divider"
+        android:layout_marginStart="@dimen/definition_inter_margin"
+        android:layout_marginEnd="@dimen/definition_inter_margin">
     </androidx.recyclerview.widget.RecyclerView>
 
 </RelativeLayout>

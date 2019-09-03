@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.core.app.NavUtils;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.avtdev.crazyletters.R;
@@ -24,6 +25,8 @@ public class GameListActivity extends ListBaseActivity{
 
     RecyclerView mRecyclerView;
 
+    boolean hasModified = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +35,36 @@ public class GameListActivity extends ListBaseActivity{
 
         setToolbar(findViewById(R.id.toolbar));
 
+        if(getIntent() != null && getIntent().getExtras() != null){
+            hasModified = getIntent().getExtras().getBoolean(Constants.Extras.GAME_MODIFIED.name());
+        }
+
         mRecyclerView = findViewById(R.id.rvGames);
 
         List<Game> listGames = RealmManager.getInstance(this).getGames();
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mRecyclerView.setAdapter(new GameListAdapter(this, listGames));
     }
 
     public void select(long gameId){
-        Intent i = new Intent();
-        i.putExtra(Constants.Extras.GAME.name(), gameId);
-        setResult(RESULT_OK, i);
-        finish();
+
+        if(hasModified){
+            showTwoBtnDialog(R.string.warning, R.string.warning_game_override, R.string.accept,
+                    (dialog, which) -> {
+                        Intent i = new Intent();
+                        i.putExtra(Constants.Extras.GAME.name(), gameId);
+                        setResult(RESULT_OK, i);
+                        finish();
+                    },
+                    R.string.cancel, (dialog, which) -> {dialog.dismiss();});
+
+        }else{
+            Intent i = new Intent();
+            i.putExtra(Constants.Extras.GAME.name(), gameId);
+            setResult(RESULT_OK, i);
+            finish();
+        }
     }
 }

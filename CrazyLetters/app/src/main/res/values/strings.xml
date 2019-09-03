@@ -17,23 +17,39 @@
     <string name="loading">Loading</string>
     <string name="play">Play</string>
     <string name="game_name">Game Name</string>
+    <string name="game_name_short">Name</string>
     <string name="languages">Languages</string>
 
     <!--Dialogs-->
+    <string name="game_save_title">Game Saved</string>
+    <string name="game_save_message">The game configuration has been saved correctly</string>
+    <string name="warning">Warning</string>
     <string name="error_title">Error</string>
     <string name="error_login">There has been an error in the sign up. Try it again later!</string>
     <string name="error_game_name">You have to set a game name to save it.</string>
+    <string name="error_save_game">There has been an error while the game configuration was saving. Try it again!</string>
     <string name="accept">Accept</string>
     <string name="retry">Retry</string>
     <string name="exit">Exit</string>
 
-    <string name="infinite" translatable="false">\u221E</string>
+    <string name="warning_game_override">There will be removed the changes that you have done. Do you want to continue?</string>
+    <string name="warning_remove_game">Are you sure that you want to remove the game configuration? (this action cannot be redone)</string>
+    <string name="warning_game_not_saved">Do you want to saved the configuration? (Clicking \'Cancel\' you will play with the configuration, but it will not be saved).</string>
 
-    <string name="velocity">Velocity</string>
+    <string name="infinite" translatable="false">\u221E</string>
+    <string name="cross" translatable="false">\u2718</string>
+    <string name="tick" translatable="false">\u2714</string>
+    <string name="horizontal_arrow" translatable="false">\u2194</string>
+    <string name="vertical_arrow" translatable="false">\u2195</string>
+    <string name="diagonal_arrow" translatable="false">\u2197</string>
+    <string name="show_hide" translatable="false">\u2197</string>
+
+    <string name="velocity">Vel.</string>
     <string name="velocity_min">Min Velocity</string>
     <string name="velocity_max">Max Velocity</string>
 
     <string name="letter_type">Letters Movements</string>
+    <string name="letter_type_short">Letters</string>
     <string name="letter_type_horiz_move">Horizontal Movements</string>
     <string name="letter_type_vert_move">Vertical Movements</string>
     <string name="letter_type_diag_move">Diagonal Movements</string>
@@ -42,11 +58,13 @@
     <string name="last_used">Last Used</string>
 
     <string name="accents">Remove accents from letters</string>
-    <string name="language">Language</string>
+    <string name="accents_short">Accents</string>
+    <string name="language">Lan.</string>
     <string name="ocurrences">Nº Words</string>
 
     <string name="all">All</string>
     <string name="time">Time</string>
+    <string name="clock">\u23F1</string>
 
     <!--Setings options-->
     <string name="show_notifications">Show Notifications</string>

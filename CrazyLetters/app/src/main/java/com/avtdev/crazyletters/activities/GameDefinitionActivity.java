@@ -14,9 +14,11 @@ import com.avtdev.crazyletters.services.RealmManager;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.GameConstants;
 import com.avtdev.crazyletters.utils.Logger;
+import com.avtdev.crazyletters.utils.Utils;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GameDefinitionActivity extends BaseActivity implements View.OnClickListener {
 
@@ -45,8 +47,6 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
     NumberPicker mTimePicker;
 
-    boolean modified = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +66,8 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
         mLanguagesTV = findViewById(R.id.tvLanguages);
 
+        mAccent = findViewById(R.id.cbUseAccent);
+
         mTimePicker = findViewById(R.id.timePicker);
 
         findViewById(R.id.btnLoadGame).setOnClickListener(this);
@@ -79,6 +81,7 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
             findViewById(R.id.btnSelectLanguages).setVisibility(View.INVISIBLE);
         }
 
+        setLanguages(new String[0]);
 
         initializeVelocity();
 
@@ -102,9 +105,14 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
     private void initializeVelocity(){
 
+
         mMinVelSB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(mMaxVelSB.getProgress() < progress){
+                    progress = mMaxVelSB.getProgress();
+                    seekBar.setProgress(progress);
+                }
                 mMinVelTV.setText(String.valueOf(progress));
             }
 
@@ -122,6 +130,10 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
         mMaxVelSB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(mMinVelSB.getProgress() > progress){
+                    progress = mMinVelSB.getProgress();
+                    seekBar.setProgress(progress);
+                }
                 mMaxVelTV.setText(String.valueOf(progress));
             }
 
@@ -144,10 +156,76 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
         mMaxVelSB.setProgress(max);
     }
 
+    private void setLanguages(String[] languages){
+        if(languages != null && languages.length > 0 && !"".equals(languages[0])){
+            StringBuilder stringBuilder = new StringBuilder();
+            mLanguagesList = languages;
+            for (String lan : mLanguagesList){
+                if(stringBuilder.length() > 0){
+                    stringBuilder.append(Constants.ARRAY_SEPARATOR);
+                }
+                stringBuilder.append(lan);
+            }
+            mLanguagesTV.setText(stringBuilder.toString());
+        }else{
+            mLanguagesList = new String[0];
+            mLanguagesTV.setText(R.string.all);
+        }
+    }
+
+    private boolean hasModified(){
+        boolean noModified = true;
+        try {
+            if (mGame == null) {
+                noModified = Utils.isNull(mGameName.getText().toString());
+                noModified = noModified && mMinVelSB.getProgress() == 0;
+                noModified = noModified && mMaxVelSB.getProgress() == mMaxVelSB.getMax();
+                noModified = noModified && (mLanguagesList == null || mLanguagesList.length == 0);
+                noModified = noModified && !mHorizMove.isChecked();
+                noModified = noModified && !mVertMove.isChecked();
+                noModified = noModified && !mDiagMove.isChecked();
+                noModified = noModified && !mShowHide.isChecked();
+                noModified = noModified && !mAccent.isChecked();
+                noModified = noModified && mTimePicker.getValue() == 0;
+            } else {
+                noModified = mGame.getName().equals(mGameName.getText().toString());
+                noModified = noModified && mGame.getVelocity()[0] == mMinVelSB.getProgress();
+                noModified = noModified && mGame.getVelocity()[1] == mMaxVelSB.getProgress();
+                noModified = noModified && Arrays.equals(mGame.getLanguages(), mLanguagesList);
+                GameConstants.LettersType[] lettersTypes = mGame.getLettersType();
+                for(GameConstants.LettersType lettersType : lettersTypes){
+                    switch (lettersType){
+                        case HORIZONTAL_MOVE:
+                            noModified = noModified && mHorizMove.isChecked();
+                            break;
+                        case VERTICAL_MOVE:
+                            noModified = noModified && mVertMove.isChecked();
+                            break;
+                        case DIAGONAL_MOVE:
+                            noModified = noModified && mDiagMove.isChecked();
+                            break;
+                        case SHOW_HIDE:
+                            noModified = noModified && mShowHide.isChecked();
+                            break;
+                    }
+                }
+                noModified = noModified && mGame.hasAccent() == mAccent.isChecked();
+                noModified = noModified && mGame.getTime() == mTimePicker.getValue();
+            }
+        }catch (Exception ex){
+            Logger.e(TAG, "hasModified", ex);
+            noModified = false;
+        }
+        return !noModified;
+    }
+
     @Override
     public void onClick(View v) {
+        hideKeyboard();
         if(v.getId() == R.id.btnLoadGame) {
-            startActivityForResult(new Intent(this, GameListActivity.class), LOAD_GAME_CODE);
+            Intent i = new Intent(this, GameListActivity.class);
+            i.putExtra(Constants.Extras.GAME_MODIFIED.name(), hasModified());
+            startActivityForResult(i, LOAD_GAME_CODE);
         }else if(v.getId() == R.id.btnSelectLanguages || v.getId() == mLanguagesTV.getId()) {
             Intent i = new Intent(this, LanguageSelectionActivity.class);
             i.putExtra(Constants.Extras.LANGUAGE_LIST.name(), mLanguagesTV.getText().toString());
@@ -169,7 +247,7 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
             if(v.getId() == R.id.btnSaveGame){
                 if(!name.isEmpty() && (mGame == null || !name.equals(mGame.getName()))){
-                    RealmManager.getInstance(this).saveGame(
+                    mGame = RealmManager.getInstance(this).saveGame(
                             name,
                             vel,
                             lettersTypes.toArray(new GameConstants.LettersType[0]),
@@ -189,21 +267,45 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                             R.string.accept,
                             (dialog, which) -> {dialog.dismiss();});
                 }
+                if(mGame == null){
+                    showOneBtnDialog(R.string.error_title,
+                            R.string.error_save_game,
+                            R.string.accept,
+                            (dialog, which) -> {dialog.dismiss();});
+                }else{
+                    showOneBtnDialog(R.string.game_save_title,
+                            R.string.game_save_message,
+                            R.string.accept,
+                            (dialog, which) -> {dialog.dismiss();});
+                }
             }else{
-                if(modified){
-                    RealmManager.getInstance(this).saveGame(
-                            null,
-                            vel,
-                            lettersTypes.toArray(new GameConstants.LettersType[0]),
-                            mLanguagesList,
-                            !mAccent.isChecked(),
-                            time);
+                if(hasModified() && !Utils.isNull(mGameName.getText().toString())){
+                    showTwoBtnDialog(R.string.warning, R.string.warning_game_not_saved, R.string.accept,
+                            (dialog, which) -> {
+                                mGame = RealmManager.getInstance(this).saveGame(mGame);
+
+                                Intent intent = new Intent(this, GameActivity.class);
+                                intent.putExtra(Constants.Extras.GAME.name(), mGame.getId());
+                                startActivity(intent);
+                                finish();
+                            },
+                            R.string.cancel, (dialog, which) -> {
+
+                                mGame = RealmManager.getInstance(this).saveGame(
+                                        null,
+                                        vel,
+                                        lettersTypes.toArray(new GameConstants.LettersType[0]),
+                                        mLanguagesList,
+                                        !mAccent.isChecked(),
+                                        time);
+                                Intent intent = new Intent(this, GameActivity.class);
+                                intent.putExtra(Constants.Extras.GAME.name(), mGame.getId());
+                                startActivity(intent);
+                                finish();
+                    });
                 }else{
                     RealmManager.getInstance(this).saveGame(mGame);
                 }
-                Intent intent = new Intent(this, GameActivity.class);
-                startActivity(intent);
-                finish();
             }
         }
     }
@@ -212,34 +314,65 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
         if(res == RESULT_OK){
-            switch (req){
-                case LOAD_GAME_CODE:
+            if (req == LOAD_GAME_CODE) {
+                try {
+                    if (data != null && data.getExtras() != null) {
+                        Long gameId = data.getExtras().getLong(Constants.Extras.GAME.name());
+                        mGame = RealmManager.getInstance(this).getGame(gameId);
+                        if (mGame != null) {
+                            if(mGame.isDefaultGame())
+                                mGame.setName("");
+                            mGameName.setText(mGame.getName());
 
-                break;
-                case SELECT_LANGUAGE_CODE:
+                            Integer[] vel = mGame.getVelocity();
+                            if (vel != null && vel.length == 2) {
+                                mMinVelSB.setProgress(vel[0]);
+                                mMaxVelSB.setProgress(vel[1]);
+                            }
+
+                            GameConstants.LettersType[] lettersTypes = mGame.getLettersType();
+
+                            mHorizMove.setChecked(false);
+                            mVertMove.setChecked(false);
+                            mDiagMove.setChecked(false);
+                            mShowHide.setChecked(false);
+
+                            for (GameConstants.LettersType lettersType : lettersTypes) {
+                                switch (lettersType) {
+                                    case HORIZONTAL_MOVE:
+                                        mHorizMove.setChecked(true);
+                                        break;
+                                    case VERTICAL_MOVE:
+                                        mVertMove.setChecked(true);
+                                        break;
+                                    case DIAGONAL_MOVE:
+                                        mDiagMove.setChecked(true);
+                                        break;
+                                    case SHOW_HIDE:
+                                        mShowHide.setChecked(true);
+                                        break;
+                                }
+                            }
+
+                            setLanguages(mGame.getLanguages());
+                            mAccent.setChecked(!mGame.hasAccent());
+                            mTimePicker.setValue(mGame.getTime());
+                        }
+                    }
+                } catch (Exception ex) {
+                    Logger.e(TAG, "onActivityResult - Select Game", ex);
+                }
+            }else if(req == SELECT_LANGUAGE_CODE){
                     try{
                         if(data != null && data.getExtras() != null){
                             ArrayList<String> languages = data.getExtras().getStringArrayList(Constants.Extras.LANGUAGE_LIST.name());
-                            if(languages != null && !languages.isEmpty() && !"".equals(languages.get(0))){
-                                StringBuilder stringBuilder = new StringBuilder();
-                                mLanguagesList = languages.toArray(new String[languages.size()]);
-                                for (String lan : mLanguagesList){
-                                    if(stringBuilder.length() > 0){
-                                        stringBuilder.append(";");
-                                    }
-                                    stringBuilder.append(lan);
-                                }
-                                mLanguagesTV.setText(stringBuilder.toString());
-                            }else{
-                                mLanguagesList = new String[]{""};
-                                mLanguagesTV.setText(R.string.all);
+                            if(languages != null) {
+                                setLanguages(languages.toArray(new String[languages.size()]));
                             }
                         }
                     }catch (Exception ex){
                         Logger.e(TAG, "onActivityResult - Select Language", ex);
                     }
-
-                break;
             }
         }
     }

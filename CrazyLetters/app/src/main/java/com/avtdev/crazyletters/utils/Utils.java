@@ -1,6 +1,7 @@
 package com.avtdev.crazyletters.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
@@ -14,9 +15,13 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Function;
+
+import static com.avtdev.crazyletters.utils.Constants.ARRAY_SEPARATOR;
 
 public class Utils {
 
@@ -31,9 +36,9 @@ public class Utils {
         if(listData != null){
             for(T data : listData){
                 if(returnData == null){
-                    returnData = String.valueOf(listData);
+                    returnData = String.valueOf(data);
                 }else{
-                    returnData += "," + String.valueOf(listData);
+                    returnData += ARRAY_SEPARATOR + data;
                 }
             }
         }
@@ -43,19 +48,22 @@ public class Utils {
     public static <T> T[] stringToList(String data, Class<T> toClass){
         T[] listData = (T[]) Array.newInstance(toClass, 0);
         if(data != null){
-            String[] stringData = data.split(";");
+            String[] stringData = data.split(ARRAY_SEPARATOR);
             listData = (T[]) Array.newInstance(toClass, stringData.length);
+
             for(int i = 0; i < listData.length; i++) {
                 if(toClass.isEnum()){
                     listData[i] = (T) Enum.valueOf((Class) toClass, stringData[i]);
-                }else{
-                    listData[i] = toClass.cast(stringData[i]);
+                }else if(toClass == Integer.class){
+                    Integer t = Integer.parseInt(stringData[i]);
+                    listData[i] = (T) t;
+                }else if(toClass == String.class){
+                    listData[i] = (T) stringData[i];
                 }
             }
         }
         return listData;
     }
-
 
     public static void setSharedPreferences(Context context, String key, Object value){
         try {

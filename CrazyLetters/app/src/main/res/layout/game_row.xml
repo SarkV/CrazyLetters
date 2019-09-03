@@ -4,28 +4,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/definition_inter_margin"
-    android:layout_gravity="center_horizontal">
+    android:layout_gravity="center">
 
     <TextView
         android:id="@+id/tvName"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
-        android:text="@string/game_name"
+        android:layout_weight="0.7"
+        android:text="@string/game_name_short"
         android:textStyle="bold"
-        android:textSize="@dimen/definition_text_size"
+        android:textSize="@dimen/game_list_text_size"
         android:textColor="@color/colorSecondaryLight"
-        android:gravity="center_horizontal"/>
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:gravity="center"/>
     <TextView
         android:id="@+id/tvTime"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
-        android:text="@string/time"
+        android:layout_weight="0.2"
         android:textStyle="bold"
-        android:textSize="@dimen/definition_text_size"
+        android:textSize="@dimen/game_list_text_size"
+        android:text="@string/clock"
         android:textColor="@color/colorSecondaryLight"
-        android:gravity="center_horizontal"/>
+        android:gravity="center"/>
     <TextView
         android:id="@+id/tvLanguages"
         android:layout_width="0dp"
@@ -33,46 +35,46 @@
         android:layout_weight="0.5"
         android:text="@string/language"
         android:textStyle="bold"
-        android:textSize="@dimen/definition_text_size"
+        android:textSize="@dimen/game_list_text_size"
         android:textColor="@color/colorSecondaryLight"
-        android:gravity="center_horizontal"/>
+        android:gravity="center"/>
     <TextView
         android:id="@+id/tvVelocity"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
-        android:text="@string/velocity_max"
+        android:layout_weight="0.3"
+        android:text="@string/velocity"
         android:textStyle="bold"
-        android:textSize="@dimen/definition_text_size"
+        android:textSize="@dimen/game_list_text_size"
         android:textColor="@color/colorSecondaryLight"
-        android:gravity="center_horizontal"/>
+        android:gravity="center"/>
     <TextView
         android:id="@+id/tvLettersType"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
-        android:text="@string/letter_type"
+        android:text="@string/letter_type_short"
         android:textStyle="bold"
-        android:textSize="@dimen/definition_text_size"
+        android:textSize="@dimen/game_list_text_size"
         android:textColor="@color/colorSecondaryLight"
-        android:gravity="center_horizontal"/>
+        android:gravity="center"/>
     <TextView
-        android:id="@+id/tvLastUsed"
+        android:id="@+id/tvAccent"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
-        android:text="@string/last_used"
+        android:text="@string/accents_short"
         android:textStyle="bold"
-        android:textSize="@dimen/definition_text_size"
+        android:textSize="@dimen/game_list_text_size"
         android:textColor="@color/colorSecondaryLight"
-        android:gravity="center_horizontal"/>
+        android:gravity="center"/>
     <ImageView
         android:id="@+id/ivDelete"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.1"
-        android:src="@drawable/ic_tick"
-        android:gravity="center_horizontal"
+        android:layout_weight="0.2"
+        android:src="@drawable/ic_remove"
+        android:gravity="center"
         android:tint="@color/colorSecondaryLight"
         android:visibility="invisible"/>
 </LinearLayout>

@@ -41,12 +41,16 @@ public class GameActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_game);
 
         try{
-            mGame = RealmManager.getInstance(this).getLastGame();
+            if(getIntent() != null && getIntent().getExtras() != null){
+                long id = getIntent().getExtras().getLong(Constants.Extras.GAME.name());
+                mGame = RealmManager.getInstance(this).getGame(id);
+            }
             if(mGame == null){
+                mGame = RealmManager.getInstance(this).getLastGame();
+            }
 
-                mGameRoom = GameRoom.getInstance();
-                mGameRoom.startGame(new ArrayList<>());
-                //finish();
+            if(mGame == null){
+                finish();
             }
             //mGameMode = GameConstants.Mode.valueOf(extras.getString(Constants.Extras.GAME_MODE.name(), GameConstants.Mode.INVITATION.name()));
 

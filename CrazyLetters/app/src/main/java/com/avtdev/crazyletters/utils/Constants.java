@@ -32,6 +32,9 @@ public class Constants {
     public enum Extras {
         GAME,
         GAME_MODE,
+        GAME_MODIFIED,
         LANGUAGE_LIST
     }
+
+    public static final String ARRAY_SEPARATOR = ";";
 }

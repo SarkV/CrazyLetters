@@ -106,7 +106,7 @@ public class SplashActivity extends BaseActivity {
                         listResponse.add(response);
                     }
                     if(listResponse.size() > 0)
-                        RealmManager.getInstance(SplashActivity.this).saveCustomGames(listResponse);
+                        RealmManager.getInstance(SplashActivity.this).saveDefaultGames(listResponse);
 
                     Utils.setSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_GAME_MODES.name(), currentTime);
 
