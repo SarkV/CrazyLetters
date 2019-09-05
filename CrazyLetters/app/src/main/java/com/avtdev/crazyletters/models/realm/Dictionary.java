@@ -1,34 +1,40 @@
 package com.avtdev.crazyletters.models.realm;
 
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
-import com.google.gson.annotations.SerializedName;
 
 import java.text.Normalizer;
-import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmField;
 
 public class Dictionary extends RealmObject {
 
     public static final class PROPERTIES{
         public static final String ID = "id";
         public static final String WORD = "word";
-        public static final String WORD_NO_ACENT = "word";
+        public static final String WORD_NO_ACCENT = "wordNoAccent";
+        public static final String WORD_LENGTH = "wordLength";
         public static final String LANGUAGE = "language";
     }
 
     @PrimaryKey
-    @SerializedName(PROPERTIES.ID)
+    @RealmField(PROPERTIES.ID)
     private String id;
 
-    @SerializedName(PROPERTIES.WORD)
+    @Index
+    @RealmField(PROPERTIES.WORD)
     private String word;
 
-    @SerializedName(PROPERTIES.WORD_NO_ACENT)
-    private String wordNoAcent;
+    @Index
+    @RealmField(PROPERTIES.WORD_NO_ACCENT)
+    private String wordNoAccent;
 
-    @SerializedName(PROPERTIES.LANGUAGE)
+    @RealmField(PROPERTIES.WORD_LENGTH)
+    private int wordLength;
+
+    @RealmField(PROPERTIES.LANGUAGE)
     private String language;
 
     public Dictionary() {
@@ -38,9 +44,10 @@ public class Dictionary extends RealmObject {
         this.id = dictionaryResponse.getId();
         this.word = dictionaryResponse.getWord();
         if(dictionaryResponse.getWord() != null){
-            this.wordNoAcent = Normalizer.normalize(dictionaryResponse.getWord(), Normalizer.Form.NFD)
+            this.wordNoAccent = Normalizer.normalize(dictionaryResponse.getWord(), Normalizer.Form.NFD)
                     .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         }
+        this.wordLength = Math.max(this.word.length(), this.wordNoAccent.length());
         this.language = dictionaryResponse.getLanguage();
     }
 
@@ -60,12 +67,12 @@ public class Dictionary extends RealmObject {
         this.word = word;
     }
 
-    public String getWordNoAcent() {
-        return wordNoAcent;
+    public String getWordNoAccent() {
+        return wordNoAccent;
     }
 
-    public void setWordNoAcent(String wordNoAcent) {
-        this.wordNoAcent = wordNoAcent;
+    public void setWordNoAccent(String wordNoAccent) {
+        this.wordNoAccent = wordNoAccent;
     }
 
     public String getLanguage() {
@@ -74,5 +81,13 @@ public class Dictionary extends RealmObject {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public int getWordLength() {
+        return wordLength;
+    }
+
+    public void setWordLength(int wordLength) {
+        this.wordLength = wordLength;
     }
 }

@@ -19,6 +19,7 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 public class GameDefinitionActivity extends BaseActivity implements View.OnClickListener {
 
@@ -245,7 +246,14 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
             int time = mTimePicker.getValue();
 
-            if(v.getId() == R.id.btnSaveGame){
+
+            if(lettersTypes.isEmpty()){
+                showOneBtnDialog(R.string.error_title,
+                        R.string.error_no_letter_type,
+                        R.string.accept,
+                        (dialog, which) -> {dialog.dismiss();});
+
+            }else if(v.getId() == R.id.btnSaveGame){
                 if(!name.isEmpty() && (mGame == null || !name.equals(mGame.getName()))){
                     mGame = RealmManager.getInstance(this).saveGame(
                             name,
@@ -253,14 +261,14 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                             lettersTypes.toArray(new GameConstants.LettersType[0]),
                             mLanguagesList,
                             !mAccent.isChecked(),
-                            time);
+                            time, false);
                 }else if(!name.isEmpty()){
                     mGame.setVelocity(vel);
                     mGame.setLettersType(lettersTypes.toArray(new GameConstants.LettersType[0]));
                     mGame.setLanguages(mLanguagesList);
                     mGame.setTime(time);
 
-                    RealmManager.getInstance(this).updateGame(mGame);
+                    RealmManager.getInstance(this).saveGame(mGame, false);
                 }else{
                     showOneBtnDialog(R.string.error_title,
                             R.string.error_game_name,
@@ -282,12 +290,8 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                 if(hasModified() && !Utils.isNull(mGameName.getText().toString())){
                     showTwoBtnDialog(R.string.warning, R.string.warning_game_not_saved, R.string.accept,
                             (dialog, which) -> {
-                                mGame = RealmManager.getInstance(this).saveGame(mGame);
-
-                                Intent intent = new Intent(this, GameActivity.class);
-                                intent.putExtra(Constants.Extras.GAME.name(), mGame.getId());
-                                startActivity(intent);
-                                finish();
+                                mGame = RealmManager.getInstance(this).saveGame(mGame, true);
+                                runGame(v.getId());
                             },
                             R.string.cancel, (dialog, which) -> {
 
@@ -297,16 +301,36 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                                         lettersTypes.toArray(new GameConstants.LettersType[0]),
                                         mLanguagesList,
                                         !mAccent.isChecked(),
-                                        time);
-                                Intent intent = new Intent(this, GameActivity.class);
-                                intent.putExtra(Constants.Extras.GAME.name(), mGame.getId());
-                                startActivity(intent);
-                                finish();
+                                        time, true);
+                                runGame(v.getId());
+
                     });
                 }else{
-                    RealmManager.getInstance(this).saveGame(mGame);
+                    mGame = RealmManager.getInstance(this).saveGame(
+                            name,
+                            vel,
+                            lettersTypes.toArray(new GameConstants.LettersType[0]),
+                            mLanguagesList,
+                            !mAccent.isChecked(),
+                            time, true);
+                    runGame(v.getId());
                 }
             }
+        }
+    }
+
+    private void runGame(long btnId){
+        if(mGame == null){
+            showOneBtnDialog(R.string.error_title,
+                    R.string.error_create_game,
+                    R.string.accept,
+                    (dialog, which) -> {dialog.dismiss();});
+        }else{
+            Intent intent = new Intent(this, GameActivity.class);
+            intent.putExtra(Constants.Extras.GAME.name(), mGame.getId());
+            intent.putExtra(Constants.Extras.GAME_MODE.name(), btnId == R.id.btnInvite ? GameConstants.Mode.INVITATION : GameConstants.Mode.SINGLE_PLAYER);
+            startActivity(intent);
+            finish();
         }
     }
 

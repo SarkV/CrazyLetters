@@ -2,6 +2,7 @@ package com.avtdev.crazyletters.services;
 
 import android.content.Context;
 
+import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.models.realm.Dictionary;
 import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.models.realm.Language;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -33,9 +35,16 @@ public class RealmManager {
     private RealmManager(Context context) {
         Realm.init(context);
 
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
+
+        RealmConfiguration config;
+        if( BuildConfig.PRO){
+           config = new RealmConfiguration.Builder()
+                   .build();
+        } else{
+            config = new RealmConfiguration.Builder()
+                    .deleteRealmIfMigrationNeeded()
+                    .build();
+        }
 
         Realm.setDefaultConfiguration(config);
     }
@@ -47,7 +56,7 @@ public class RealmManager {
         return mInstance;
     }
 
-    private Realm getRealm(){
+    public Realm getRealm(){
         if(mRealm == null || mRealm.isClosed()){
             // Get a Realm instance for this thread
             mRealm = Realm.getDefaultInstance();
@@ -114,8 +123,35 @@ public class RealmManager {
         return realm.copyFromRealm(realm.where(Language.class).findAll());
     }
 
-    public List<Dictionary> getDictionary(String language){
-        return getRealm().where(Dictionary.class).equalTo(Dictionary.PROPERTIES.LANGUAGE, language).findAll();
+    public int getDictionaryMax(String language){
+        if(language == null){
+            return getRealm()
+                    .where(Dictionary.class)
+                    .sort(Dictionary.PROPERTIES.WORD_LENGTH, Sort.DESCENDING)
+                    .findFirst()
+                    .getWordLength();
+        }else{
+            return getRealm()
+                    .where(Dictionary.class)
+                    .equalTo(Dictionary.PROPERTIES.LANGUAGE, language)
+                    .sort(Dictionary.PROPERTIES.WORD_LENGTH, Sort.DESCENDING)
+                    .findFirst()
+                    .getWordLength();
+        }
+    }
+
+    public List<Dictionary> getDictionary(String language, boolean hasAccent){
+        Realm realm = getRealm();
+        RealmQuery query = realm.where(Dictionary.class);
+        if(language != null)
+            query = query.equalTo(Dictionary.PROPERTIES.LANGUAGE, language);
+        if(hasAccent){
+            query = query.distinct(Dictionary.PROPERTIES.WORD);
+        }else{
+            query = query.distinct(Dictionary.PROPERTIES.WORD_NO_ACCENT);
+        }
+
+        return realm.copyFromRealm(query.findAll());
     }
 
     public void saveDefaultGames(List<GameModeResponse> listGames){
@@ -163,37 +199,37 @@ public class RealmManager {
         });
     }
 
-    public Game saveGame(Game game){
+    public Game saveGame(Game game, boolean modifyLastUsed){
         return saveGame(game.getName(),
                 game.getVelocity(),
                 game.getLettersType(),
                 game.getLanguages(),
                 game.hasAccent(),
-                game.getTime());
+                game.getTime(),
+                modifyLastUsed);
     }
 
-    public Game saveGame(String name, Integer[] velocity, GameConstants.LettersType[] lettersType, String[] language, boolean accent, int time){
+    public Game saveGame(String name, Integer[] velocity, GameConstants.LettersType[] lettersType, String[] language, boolean accent, int time, boolean modifyLastUsed){
 
         Game game = null;
+        Realm realm = getRealm();
         try{
-            Realm realm = getRealm();
 
             realm.beginTransaction();
             if(Utils.isNull(name)){
                 game = realm.where(Game.class)
                         .equalTo(Game.PROPERTIES.VELOCITY, Utils.listToString(Arrays.asList(velocity)))
-                        .and()
+
                         .equalTo(Game.PROPERTIES.LETTERS_TYPE, Utils.listToString(Arrays.asList(lettersType)))
-                        .and()
                         .equalTo(Game.PROPERTIES.LANGUAGES, Utils.listToString(Arrays.asList(language)))
-                        .and()
-                        .equalTo(Game.PROPERTIES.LETTERS_TYPE, time)
+                        .equalTo(Game.PROPERTIES.TIME, time)
                         .findFirst();
             }
 
             if(game == null){
                 game = new Game(name, velocity, lettersType, language, accent, time, false);
-            }else{
+            }
+            if(modifyLastUsed){
                 game.setLastUsed(new Date());
             }
             realm.insertOrUpdate(game);
@@ -202,15 +238,9 @@ public class RealmManager {
         return game;
         }catch (Exception ex){
             Logger.e(TAG, "saveGame", ex);
+            realm.cancelTransaction();
         }
         return null;
-    }
-
-    public void updateGame(Game game){
-        getRealm().executeTransaction(realm -> {
-            game.setLastUsed(new Date());
-            realm.insertOrUpdate(game);
-        });
     }
 
     public Game getLastGame(){

@@ -268,5 +268,10 @@
             style="@style/MenuButton"
             android:layout_margin="@dimen/definition_inter_margin"
             android:text="@string/play"/>
+        <Button
+            android:id="@+id/btnInvite"
+            style="@style/MenuButton"
+            android:layout_margin="@dimen/definition_inter_margin"
+            android:text="@string/invite_players"/>
     </LinearLayout>
 </RelativeLayout>

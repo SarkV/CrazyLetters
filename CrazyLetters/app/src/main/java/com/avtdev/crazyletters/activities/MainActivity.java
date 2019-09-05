@@ -6,6 +6,8 @@ import android.view.View;
 
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.services.GoogleService;
+import com.avtdev.crazyletters.utils.Constants;
+import com.avtdev.crazyletters.utils.GameConstants;
 import com.google.android.gms.games.GamesActivityResultCodes;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener{
@@ -27,8 +29,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSinglePlayer:
-                startActivity(new Intent(MainActivity.this, GameDefinitionActivity.class));
-
+                Intent i = new Intent(MainActivity.this, GameDefinitionActivity.class);
+                i.putExtra(Constants.Extras.GAME_MODE.name(), GameConstants.Mode.SINGLE_PLAYER.name());
+                startActivity(i);
                 break;
             case R.id.btnMultiplayer:
 

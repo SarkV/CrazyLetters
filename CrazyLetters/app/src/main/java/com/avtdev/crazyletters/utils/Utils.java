@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.function.Function;
 
@@ -144,5 +145,9 @@ public class Utils {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return Long.parseLong(simpleDateFormat.format(date));
+    }
+
+    public static float getRandomFloat(float min, float max){
+        return min + (new Random().nextFloat() * (max - min));
     }
 }

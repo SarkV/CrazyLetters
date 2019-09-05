@@ -17,18 +17,21 @@ android {
             debuggable true
             minifyEnabled false
             buildConfigField "boolean", "GOOGLE_SERVICE", "false"
+            buildConfigField "boolean", "PRO", "false"
             signingConfig signingConfigs.debug
         }
         debug {
             debuggable true
             minifyEnabled false
             buildConfigField "boolean", "GOOGLE_SERVICE", "true"
+            buildConfigField "boolean", "PRO", "false"
         }
         release {
             debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "boolean", "GOOGLE_SERVICE", "true"
+            buildConfigField "boolean", "PRO", "true"
         }
     }
     compileOptions {

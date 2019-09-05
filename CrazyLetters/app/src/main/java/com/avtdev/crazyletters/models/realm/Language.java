@@ -1,10 +1,9 @@
 package com.avtdev.crazyletters.models.realm;
 
-import com.google.gson.annotations.SerializedName;
-
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmField;
 
 public class Language extends RealmObject {
 
@@ -14,10 +13,10 @@ public class Language extends RealmObject {
     }
 
     @PrimaryKey
-    @SerializedName(PROPERTIES.LANGUAGE)
+    @RealmField(PROPERTIES.LANGUAGE)
     private String language;
 
-    @SerializedName(PROPERTIES.OCCURENCES)
+    @RealmField(PROPERTIES.OCCURENCES)
     private long ocurrences;
 
     @Ignore

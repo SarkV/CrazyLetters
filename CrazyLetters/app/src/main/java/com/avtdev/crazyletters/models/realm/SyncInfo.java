@@ -1,12 +1,10 @@
 package com.avtdev.crazyletters.models.realm;
 
-import com.avtdev.crazyletters.models.response.DictionaryResponse;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmField;
 
 public class SyncInfo extends RealmObject {
 
@@ -16,10 +14,10 @@ public class SyncInfo extends RealmObject {
     }
 
     @PrimaryKey
-    @SerializedName(PROPERTIES.TABLE)
+    @RealmField(PROPERTIES.TABLE)
     private String table;
 
-    @SerializedName(PROPERTIES.SYNC_DATE)
+    @RealmField(PROPERTIES.SYNC_DATE)
     private Date syncDate;
 
     public SyncInfo() {

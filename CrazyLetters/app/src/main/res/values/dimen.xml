@@ -2,6 +2,7 @@
 <resources>
     <dimen name="menu_btn_margin">20dp</dimen>
     <dimen name="definition_text_size">20sp</dimen>
+    <dimen name="game_letters_size">50sp</dimen>
     <dimen name="definition_inter_margin">10dp</dimen>
     <dimen name="game_list_text_size">15sp</dimen>
 

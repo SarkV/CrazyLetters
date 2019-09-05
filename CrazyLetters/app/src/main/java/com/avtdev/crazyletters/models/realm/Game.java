@@ -2,15 +2,15 @@ package com.avtdev.crazyletters.models.realm;
 
 import com.avtdev.crazyletters.utils.GameConstants;
 import com.avtdev.crazyletters.utils.Utils;
-import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
-import io.realm.internal.fields.FieldDescriptor;
+import io.realm.annotations.RealmField;
 
 public class Game extends RealmObject {
 
@@ -27,31 +27,31 @@ public class Game extends RealmObject {
     }
 
     @PrimaryKey
-    @SerializedName(PROPERTIES.ID)
+    @RealmField(PROPERTIES.ID)
     private long id;
 
-    @SerializedName(PROPERTIES.NAME)
+    @RealmField(PROPERTIES.NAME)
     private String name;
 
-    @SerializedName(PROPERTIES.VELOCITY)
+    @RealmField(PROPERTIES.VELOCITY)
     private String velocity;
 
-    @SerializedName(PROPERTIES.LETTERS_TYPE)
+    @RealmField(PROPERTIES.LETTERS_TYPE)
     private String lettersType;
 
-    @SerializedName(PROPERTIES.LANGUAGES)
+    @RealmField(PROPERTIES.LANGUAGES)
     private String languages;
 
-    @SerializedName(PROPERTIES.ACCENT)
+    @RealmField(PROPERTIES.ACCENT)
     private boolean accent;
 
-    @SerializedName(PROPERTIES.TIME)
+    @RealmField(PROPERTIES.TIME)
     private int time;
 
-    @SerializedName(PROPERTIES.LAST_USED)
+    @RealmField(PROPERTIES.LAST_USED)
     private Date lastUsed;
 
-    @SerializedName(PROPERTIES.DEFAULT_GAME)
+    @RealmField(PROPERTIES.DEFAULT_GAME)
     private boolean defaultGame;
 
     public Game() {
@@ -66,7 +66,7 @@ public class Game extends RealmObject {
         this.accent = accent;
         this.time = time;
         this.defaultGame = custom;
-        this.lastUsed = new Date();
+        this.lastUsed = null;
     }
 
     public long getId() {

@@ -37,4 +37,5 @@ public class Constants {
     }
 
     public static final String ARRAY_SEPARATOR = ";";
+    public static final int WORD_DELAY = 500;
 }

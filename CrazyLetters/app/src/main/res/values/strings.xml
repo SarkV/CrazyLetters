@@ -4,10 +4,10 @@
 
     <string name="title_game_config">Game Configuration</string>
 
-    <string name="single_player">Single Player</string>
-    <string name="multiplayer">Multiplayer</string>
+    <string name="single_player">Create Game</string>
+    <string name="multiplayer">Competitive</string>
     <string name="invitations">Invitations</string>
-    <string name="invite_players">Invite friends</string>
+    <string name="invite_players">Invite</string>
     <string name="inv_popup_text">Incoming invitation!</string>
     <string name="see_invitations">See invitations</string>
     <string name="shop">Shop</string>
@@ -27,7 +27,9 @@
     <string name="error_title">Error</string>
     <string name="error_login">There has been an error in the sign up. Try it again later!</string>
     <string name="error_game_name">You have to set a game name to save it.</string>
+    <string name="error_no_letter_type">You have to select one letter movement at least.</string>
     <string name="error_save_game">There has been an error while the game configuration was saving. Try it again!</string>
+    <string name="error_create_game">There has been an error while the game was starting. Reconfigure the game and try it again!</string>
     <string name="accept">Accept</string>
     <string name="retry">Retry</string>
     <string name="exit">Exit</string>
@@ -42,7 +44,7 @@
     <string name="horizontal_arrow" translatable="false">\u2194</string>
     <string name="vertical_arrow" translatable="false">\u2195</string>
     <string name="diagonal_arrow" translatable="false">\u2197</string>
-    <string name="show_hide" translatable="false">\u2197</string>
+    <string name="show_hide" translatable="false">\u2732</string>
 
     <string name="velocity">Vel.</string>
     <string name="velocity_min">Min Velocity</string>
@@ -70,7 +72,7 @@
     <string name="show_notifications">Show Notifications</string>
     <string name="allow_invitations">Allow Invitations</string>
     <string name="save">Save</string>
-    <string name="load_game">Load Game</string>
+    <string name="load_game">Load</string>
     <string name="cancel">Cancel</string>
 
     <string name="please_wait">Please wait&#8230;</string>
