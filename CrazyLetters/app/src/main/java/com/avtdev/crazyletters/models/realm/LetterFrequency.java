@@ -29,11 +29,11 @@ public class LetterFrequency extends RealmObject {
     public LetterFrequency() {
     }
 
-    public LetterFrequency(String language, String letter, double frecuency) {
+    public LetterFrequency(String language, String letter, double frequency) {
         this.id = language + "_" + letter;
         this.language = language;
         this.letter = letter;
-        this.frequency = frecuency;
+        this.frequency = frequency;
     }
 
     public String getId() {

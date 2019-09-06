@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class GameFactory {
 
-    HashMap<String, Double> mLettersFrecuency;
+    HashMap<String, Double> mLettersFrequency;
     private Game mGame;
     private Random mRandom;
     private GameCanvas mGameCanvas;
@@ -34,39 +34,39 @@ public class GameFactory {
         this.mGameCanvas = gameCanvas;
         this.finished = false;
 
-        getLetterFrecuency(context);
+        getLetterFrequency(context);
 
         mHandler = new Handler();
         generateWord();
     }
 
-    private void getLetterFrecuency(Context context){
-        mLettersFrecuency = new HashMap<>();
+    private void getLetterFrequency(Context context){
+        mLettersFrequency = new HashMap<>();
 
-        List<LetterFrequency> lettersFrecuencyTemp = RealmManager.getInstance(context).getLettersFrequency(mGame.getLanguagesString());
+        List<LetterFrequency> lettersFrequencyTemp = RealmManager.getInstance(context).getLettersFrequency(mGame.getLanguagesString());
 
         String letter;
 
         double sum = 0;
 
-        for(LetterFrequency letterFrecuency : lettersFrecuencyTemp){
+        for(LetterFrequency letterFrequency : lettersFrequencyTemp){
             if(mGame.hasAccent()){
-                letter = letterFrecuency.getLetter();
+                letter = letterFrequency.getLetter();
             }else{
-                letter = Normalizer.normalize(letterFrecuency.getLetter(), Normalizer.Form.NFD)
+                letter = Normalizer.normalize(letterFrequency.getLetter(), Normalizer.Form.NFD)
                         .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
             }
-            if(!Utils.isNull(letter) && letterFrecuency.getFrequency() > 0){
-                sum += letterFrecuency.getFrequency();
-                mLettersFrecuency.put(letter, letterFrecuency.getFrequency() + mLettersFrecuency.getOrDefault(letter, 0.0));
+            if(!Utils.isNull(letter) && letterFrequency.getFrequency() > 0){
+                sum += letterFrequency.getFrequency();
+                mLettersFrequency.put(letter, letterFrequency.getFrequency() + mLettersFrequency.getOrDefault(letter, 0.0));
             }
         }
 
         if(sum > 0){
             double prevValue = 0.0;
-            for (Map.Entry<String, Double> values : mLettersFrecuency.entrySet()) {
+            for (Map.Entry<String, Double> values : mLettersFrequency.entrySet()) {
                 prevValue += values.getValue() / sum;
-                mLettersFrecuency.put(values.getKey(), prevValue);
+                mLettersFrequency.put(values.getKey(), prevValue);
             }
         }
     }
@@ -74,7 +74,7 @@ public class GameFactory {
     private void generateWord(){
         char letterChar = 'A';
         double v = mRandom.nextDouble();
-        for (Map.Entry<String, Double> values : mLettersFrecuency.entrySet()) {
+        for (Map.Entry<String, Double> values : mLettersFrequency.entrySet()) {
             if(v <= values.getValue()){
                 letterChar = values.getKey().charAt(0);
                 break;
