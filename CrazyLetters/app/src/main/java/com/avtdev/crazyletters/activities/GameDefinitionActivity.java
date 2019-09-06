@@ -194,23 +194,32 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                 noModified = noModified && mGame.getVelocity()[1] == mMaxVelSB.getProgress();
                 noModified = noModified && Arrays.equals(mGame.getLanguages(), mLanguagesList);
                 GameConstants.LettersType[] lettersTypes = mGame.getLettersType();
-                for(GameConstants.LettersType lettersType : lettersTypes){
-                    switch (lettersType){
-                        case HORIZONTAL_MOVE:
-                            noModified = noModified && mHorizMove.isChecked();
-                            break;
-                        case VERTICAL_MOVE:
-                            noModified = noModified && mVertMove.isChecked();
-                            break;
-                        case DIAGONAL_MOVE:
-                            noModified = noModified && mDiagMove.isChecked();
-                            break;
-                        case SHOW_HIDE:
-                            noModified = noModified && mShowHide.isChecked();
-                            break;
+                int lettersMovement = 0;
+                lettersMovement += mHorizMove.isChecked() ? 1 : 0;
+                lettersMovement += mVertMove.isChecked() ? 1 : 0;
+                lettersMovement += mDiagMove.isChecked() ? 1 : 0;
+                lettersMovement += mShowHide.isChecked() ? 1 : 0;
+                if(lettersMovement != lettersTypes.length){
+                    noModified = false;
+                }else{
+                    for(GameConstants.LettersType lettersType : lettersTypes){
+                        switch (lettersType){
+                            case HORIZONTAL_MOVE:
+                                noModified = noModified && mHorizMove.isChecked();
+                                break;
+                            case VERTICAL_MOVE:
+                                noModified = noModified && mVertMove.isChecked();
+                                break;
+                            case DIAGONAL_MOVE:
+                                noModified = noModified && mDiagMove.isChecked();
+                                break;
+                            case SHOW_HIDE:
+                                noModified = noModified && mShowHide.isChecked();
+                                break;
+                        }
                     }
                 }
-                noModified = noModified && mGame.hasAccent() == mAccent.isChecked();
+                noModified = noModified && mGame.hasAccent() != mAccent.isChecked();
                 noModified = noModified && mGame.getTime() == mTimePicker.getValue();
             }
         }catch (Exception ex){
@@ -268,7 +277,7 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                     mGame.setLanguages(mLanguagesList);
                     mGame.setTime(time);
 
-                    RealmManager.getInstance(this).saveGame(mGame, false);
+                    RealmManager.getInstance(this).updateGame(mGame, false);
                 }else{
                     showOneBtnDialog(R.string.error_title,
                             R.string.error_game_name,
@@ -290,7 +299,7 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                 if(hasModified() && !Utils.isNull(mGameName.getText().toString())){
                     showTwoBtnDialog(R.string.warning, R.string.warning_game_not_saved, R.string.accept,
                             (dialog, which) -> {
-                                mGame = RealmManager.getInstance(this).saveGame(mGame, true);
+                                mGame = RealmManager.getInstance(this).updateGame(mGame, true);
                                 runGame(v.getId());
                             },
                             R.string.cancel, (dialog, which) -> {
@@ -305,14 +314,17 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                                 runGame(v.getId());
 
                     });
-                }else{
+                }else if(Utils.isNull(mGameName.getText().toString())){
                     mGame = RealmManager.getInstance(this).saveGame(
-                            name,
+                            null,
                             vel,
                             lettersTypes.toArray(new GameConstants.LettersType[0]),
                             mLanguagesList,
                             !mAccent.isChecked(),
                             time, true);
+                    runGame(v.getId());
+                }else{
+                    mGame = RealmManager.getInstance(this).updateGame(mGame, true);
                     runGame(v.getId());
                 }
             }

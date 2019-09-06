@@ -3,7 +3,6 @@ package com.avtdev.crazyletters.services;
 import android.content.Context;
 
 import com.avtdev.crazyletters.models.realm.Dictionary;
-import com.avtdev.crazyletters.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,12 @@ import io.realm.RealmQuery;
 
 public class GameRoom {
 
+    public interface IGameRoom{
+        void modifyPuntuations(int[] puntuations);
+    }
+
     private static GameRoom sInstance;
+    private IGameRoom mListener;
 
     private List<String> mPlayersId;
     private String mRoomId;
@@ -31,8 +35,9 @@ public class GameRoom {
     public static GameRoom getInstance(Context context){
         if(sInstance == null){
             sInstance = new GameRoom();
-            sInstance.mRealm = RealmManager.getInstance(context).getRealm();
         }
+        sInstance.mRealm = RealmManager.getInstance(context).getRealm();
+        sInstance.mListener = (IGameRoom) context;
         return sInstance;
     }
 
@@ -78,10 +83,20 @@ public class GameRoom {
                 return false;
             }
         }
-        return checkWord(word);
+        if(checkWord(word)){
+            addWord(word);
+            return true;
+        }else{
+            return false;
+        }
     }
 
-    public int[] checkPuntuations(){
+    private void addWord(String word){
+        mWordsDone.get(0).add(word);
+        checkPuntuations();
+    }
+
+    private void checkPuntuations(){
         int[] puntuations = new int[]{0,0};
 
         for(int i = 0; i < mWordsDone.size(); i++){
@@ -97,6 +112,6 @@ public class GameRoom {
                 }
             }
         }
-        return puntuations;
+        mListener.modifyPuntuations(puntuations);
     }
 }

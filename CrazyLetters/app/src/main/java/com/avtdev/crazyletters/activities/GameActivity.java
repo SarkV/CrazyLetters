@@ -2,14 +2,11 @@ package com.avtdev.crazyletters.activities;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.avtdev.crazyletters.R;
-import com.avtdev.crazyletters.models.realm.Dictionary;
 import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.services.GameFactory;
 import com.avtdev.crazyletters.services.GameRoom;
@@ -21,7 +18,7 @@ import com.avtdev.crazyletters.utils.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameActivity extends BaseActivity implements View.OnClickListener, GameCanvas.IGameCanvas {
+public class GameActivity extends BaseActivity implements View.OnClickListener, GameCanvas.IGameCanvas, GameRoom.IGameRoom {
 
     private static final String TAG  = "GameActivity";
 
@@ -81,9 +78,8 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
             mGameRoom.setSearchVariables(mGame.getLanguagesString(), mGame.hasAccent());
 
             initializeTime();
-            initializeTextListener();
 
-            new GameFactory(mGame, mGameCanvas);
+            new GameFactory(mGame, mGameCanvas, this);
 
         }catch (Exception ex){
             Logger.e("GameActivity", "onCreate", ex);
@@ -111,49 +107,16 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private void initializeTextListener(){
-        mCurrentWord.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+    public boolean addLetter(char letter){
+        if(mCurrentWord.getText().length() < mMaxWordLength){
+            mCurrentWord.setText(mCurrentWord.getText().toString() + letter);
+            if(mGameRoom.checkPlayerWord(mCurrentWord.getText().toString())){
+                mCurrentWord.setText("");
             }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() <= mMaxWordLength) {
-                    if (s.length() > 0) {
-                        addWord(s.toString());
-                    }
-                }else{
-                    mCurrentWord.setText(s.subSequence(0, s.length() - 1));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-    }
-
-    private void addWord(String word){
-        String text = mCurrentWord.getText().toString();
-        if(mGameRoom.checkPlayerWord(text)){
-            int[] puntuations = mGameRoom.checkPuntuations();
-
-            int total = puntuations[0] + puntuations[1];
-            mPlayerPuntuationTv.setText(String.valueOf(puntuations[0]));
-            mPlayerPuntuationPB.setProgress(total > 0 ? (puntuations[0]  * 100 ) / total : 0);
-
-            mBestPuntuationTv.setText((String.valueOf(puntuations[1])));
-            mBestPuntuationPB.setProgress(total > 0 ? (puntuations[1]  * 100 ) / total : 0);
-
-            mCurrentWord.setText("");
+            return true;
+        }else{
+            return false;
         }
-    }
-
-    public void addLetter(char letter){
-        mCurrentWord.setText(mCurrentWord.getText().toString() + letter);
     }
 
     @Override
@@ -168,5 +131,15 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
     private void finishGame(){
         mGameRoom.finishGame();
         finish();
+    }
+
+    @Override
+    public void modifyPuntuations(int[] puntuations) {
+        int total = puntuations[0] + puntuations[1];
+        mPlayerPuntuationTv.setText(String.valueOf(puntuations[0]));
+        mPlayerPuntuationPB.setProgress((puntuations[0]  * 100 ) / total);
+
+        mBestPuntuationTv.setText((String.valueOf(puntuations[1])));
+        mBestPuntuationPB.setProgress((puntuations[1]  * 100 ) / total);
     }
 }

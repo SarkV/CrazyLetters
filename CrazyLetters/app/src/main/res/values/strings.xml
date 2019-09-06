@@ -27,7 +27,7 @@
     <string name="error_title">Error</string>
     <string name="error_login">There has been an error in the sign up. Try it again later!</string>
     <string name="error_game_name">You have to set a game name to save it.</string>
-    <string name="error_no_letter_type">You have to select one letter movement at least.</string>
+    <string name="error_no_letter_type">You have to select at least one letter movement.</string>
     <string name="error_save_game">There has been an error while the game configuration was saving. Try it again!</string>
     <string name="error_create_game">There has been an error while the game was starting. Reconfigure the game and try it again!</string>
     <string name="accept">Accept</string>

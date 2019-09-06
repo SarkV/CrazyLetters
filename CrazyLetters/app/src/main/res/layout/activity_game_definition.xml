@@ -65,6 +65,15 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_save"
                 android:tint="@color/colorSecondaryLight"/>
+
+            <ImageView
+                android:id="@+id/btnLoadGame"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_load"
+                android:tint="@color/colorSecondaryLight"/>
         </LinearLayout>
 
         <LinearLayout
@@ -258,11 +267,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
-        <Button
-            android:id="@+id/btnLoadGame"
-            style="@style/MenuButton"
-            android:layout_margin="@dimen/definition_inter_margin"
-            android:text="@string/load_game"/>
         <Button
             android:id="@+id/btnPlay"
             style="@style/MenuButton"

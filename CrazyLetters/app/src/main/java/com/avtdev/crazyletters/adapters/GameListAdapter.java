@@ -110,7 +110,7 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHo
         if(game.getTime() == 0){
             holder.time.setText(R.string.infinite);
         }else{
-            holder.time.setText(game.getTime());
+            holder.time.setText(String.valueOf(game.getTime()));
         }
         if(Utils.isNull(game.getLanguagesString())){
             holder.languages.setText(R.string.all);

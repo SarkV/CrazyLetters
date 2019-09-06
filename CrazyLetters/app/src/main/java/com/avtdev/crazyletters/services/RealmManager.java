@@ -6,9 +6,11 @@ import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.models.realm.Dictionary;
 import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.models.realm.Language;
+import com.avtdev.crazyletters.models.realm.LetterFrequency;
 import com.avtdev.crazyletters.models.realm.SyncInfo;
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
 import com.avtdev.crazyletters.models.response.GameModeResponse;
+import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.GameConstants;
 import com.avtdev.crazyletters.utils.Logger;
 import com.avtdev.crazyletters.utils.Utils;
@@ -43,6 +45,7 @@ public class RealmManager {
         } else{
             config = new RealmConfiguration.Builder()
                     .deleteRealmIfMigrationNeeded()
+                    .initialData(new LetterFrequencyTransaction())
                     .build();
         }
 
@@ -140,20 +143,6 @@ public class RealmManager {
         }
     }
 
-    public List<Dictionary> getDictionary(String language, boolean hasAccent){
-        Realm realm = getRealm();
-        RealmQuery query = realm.where(Dictionary.class);
-        if(language != null)
-            query = query.equalTo(Dictionary.PROPERTIES.LANGUAGE, language);
-        if(hasAccent){
-            query = query.distinct(Dictionary.PROPERTIES.WORD);
-        }else{
-            query = query.distinct(Dictionary.PROPERTIES.WORD_NO_ACCENT);
-        }
-
-        return realm.copyFromRealm(query.findAll());
-    }
-
     public void saveDefaultGames(List<GameModeResponse> listGames){
         getRealm().executeTransaction(realm -> {
 
@@ -197,6 +186,26 @@ public class RealmManager {
                 game.deleteFromRealm();
             }
         });
+    }
+
+    public Game updateGame(Game game, boolean modifyLastUsed){
+
+        Realm realm = getRealm();
+        try{
+            realm.beginTransaction();
+
+            if(modifyLastUsed){
+                game.setLastUsed(new Date());
+            }
+            realm.insertOrUpdate(game);
+            realm.commitTransaction();
+
+            return game;
+        }catch (Exception ex){
+            Logger.e(TAG, "updateGame", ex);
+            realm.cancelTransaction();
+        }
+        return null;
     }
 
     public Game saveGame(Game game, boolean modifyLastUsed){
@@ -258,7 +267,35 @@ public class RealmManager {
         Realm realm = getRealm();
         return realm.copyFromRealm(realm.where(Game.class)
                 .isNotNull(Game.PROPERTIES.NAME)
+                .isNotEmpty(Game.PROPERTIES.NAME)
                 .sort(Game.PROPERTIES.LAST_USED, Sort.DESCENDING)
                 .findAll());
+    }
+
+    public List<LetterFrequency> getLettersFrequency(String language){
+        Realm realm = getRealm();
+        RealmQuery query = realm.where(LetterFrequency.class);
+        boolean first = true;
+        if(language == null){
+            List<Language> languageList = getLanguages();
+            for(Language lan: languageList){
+                if(!Utils.isNull(lan.getLanguage())){
+                    if(!first)
+                        query = query.or();
+                    query = query.equalTo(LetterFrequency.PROPERTIES.LANGUAGE, lan.getLanguage());
+                    first = false;
+
+                }
+            }
+        }else{
+            String[] languageList = language.split(Constants.ARRAY_SEPARATOR);
+            for(String lan: languageList){
+                if(!first)
+                    query = query.or();
+                query = query.equalTo(LetterFrequency.PROPERTIES.LANGUAGE, lan);
+                first = false;
+            }
+        }
+        return realm.copyFromRealm(query.findAll());
     }
 }
