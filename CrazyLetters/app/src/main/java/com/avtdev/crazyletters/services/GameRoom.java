@@ -102,7 +102,7 @@ public class GameRoom {
         for(int i = 0; i < mWordsDone.size(); i++){
             int puntAux = 0;
             for(String word : mWordsDone.get(i)){
-                puntAux += word.length();
+                puntAux += word.length() * (word.length() - 1);
             }
             if(i == 0){
                 puntuations[0] = puntAux;

@@ -2,6 +2,8 @@ package com.avtdev.crazyletters.activities;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -69,6 +71,7 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
             mBestPuntuationPB = findViewById(R.id.pbBestContraryPuntuation);
             mBestPuntuationTv = findViewById(R.id.tvBestContraryPuntuation);
             findViewById(R.id.ivRemove).setOnClickListener(this);
+            findViewById(R.id.ivSend).setOnClickListener(this);
 
             mGameRoom = GameRoom.getInstance(this);
             List<String> playersId = new ArrayList<>();
@@ -78,6 +81,7 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
             mGameRoom.setSearchVariables(mGame.getLanguagesString(), mGame.hasAccent());
 
             initializeTime();
+            initializeText();
 
             new GameFactory(mGame, mGameCanvas, this);
 
@@ -85,6 +89,25 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
             Logger.e("GameActivity", "onCreate", ex);
             finish();
         }
+    }
+
+    private void initializeText(){
+        mCurrentWord.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mCurrentWord.setTextColor(getColor(R.color.colorSecondaryLight));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void initializeTime(){
@@ -110,9 +133,6 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
     public boolean addLetter(char letter){
         if(mCurrentWord.getText().length() < mMaxWordLength){
             mCurrentWord.setText(mCurrentWord.getText().toString() + letter);
-            if(mGameRoom.checkPlayerWord(mCurrentWord.getText().toString())){
-                mCurrentWord.setText("");
-            }
             return true;
         }else{
             return false;
@@ -124,6 +144,13 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
         switch (v.getId()){
             case R.id.ivRemove:
                 mCurrentWord.setText("");
+                break;
+            case R.id.ivSend:
+                if(mGameRoom.checkPlayerWord(mCurrentWord.getText().toString())){
+                    mCurrentWord.setText("");
+                }else{
+                    mCurrentWord.setTextColor(getColor(R.color.red));
+                }
                 break;
         }
     }

@@ -1,26 +1,24 @@
 package com.avtdev.crazyletters.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
-import java.time.Clock;
-import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
-import java.util.function.Function;
 
 import static com.avtdev.crazyletters.utils.Constants.ARRAY_SEPARATOR;
 
@@ -142,6 +140,14 @@ public class Utils {
             return Long.parseLong(date.format(format));
         }
         Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return Long.parseLong(simpleDateFormat.format(date));
+    }
+
+    public static long getUTCDate(Long miliseconds){
+        String pattern = "yyyyMMddHHmm";
+        Date date = new Date(miliseconds);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return Long.parseLong(simpleDateFormat.format(date));

@@ -56,6 +56,9 @@ public class LanguageSelectionActivity extends ListBaseActivity implements View.
         }
         if(all){
             listLanguages.get(0).setSelected(true);
+            for(int i = 0; i < listLanguages.size(); i++){
+                listLanguages.get(i).setSelected(true);
+            }
         }
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));

@@ -103,15 +103,23 @@
             android:textAllCaps="true"
             android:textColor="@color/colorSecondary"
             android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/ivSend"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:padding="5dp"
+            android:src="@drawable/ic_send"
+            android:tint="@color/colorSecondary"/>
 
         <ImageView
             android:id="@+id/ivRemove"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.2"
+            android:layout_weight="0.1"
             android:padding="5dp"
             android:src="@drawable/ic_remove"
-            android:tint="@color/colorSecondaryDark"/>
+            android:tint="@color/colorSecondary"/>
     </LinearLayout>
 
 </RelativeLayout>

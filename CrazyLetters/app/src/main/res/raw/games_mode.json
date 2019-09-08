@@ -1,0 +1,38 @@
+[
+  {
+    "id": "difficult",
+    "accent" : false,
+    "createdAt" : 201908071300,
+    "lettersType" : [ "HORIZONTAL_MOVE", "VERTICAL_MOVE", "DIAGONAL_MOVE" ],
+    "name" : "DIFFICULT",
+    "time" : 0,
+    "velocity" : [ 2, 4 ]
+  },
+  {
+    "id": "easy",
+    "accent" : false,
+    "createdAt" : 201908071300,
+    "lettersType" : [ "HORIZONTAL_MOVE" ],
+    "name" : "EASY",
+    "time" : 0,
+    "velocity" : [ 1, 3 ]
+  },
+  {
+    "id": "imposible",
+    "accent" : true,
+    "createdAt" : 201908071300,
+    "lettersType" : [ "HORIZONTAL_MOVE", "VERTICAL_MOVE", "DIAGONAL_MOVE", "SHOW_HIDE" ],
+    "name" : "IMPOSIBLE",
+    "time" : 0,
+    "velocity" : [ 3, 4 ]
+  },
+  {
+    "id": "medium",
+    "accent" : false,
+    "createdAt" : 201908071300,
+    "lettersType" : [ "HORIZONTAL_MOVE", "VERTICAL_MOVE" ],
+    "name" : "MEDIUM",
+    "time" : 0,
+    "velocity" : [ 1, 4 ]
+  }
+]

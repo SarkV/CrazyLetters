@@ -62,7 +62,7 @@
     <string name="accents">Remove accents from letters</string>
     <string name="accents_short">Accents</string>
     <string name="language">Lan.</string>
-    <string name="ocurrences">Nº Words</string>
+    <string name="occurrences">Nº Words</string>
 
     <string name="all">All</string>
     <string name="time">Time</string>

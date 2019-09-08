@@ -19,12 +19,16 @@ android {
             buildConfigField "boolean", "GOOGLE_SERVICE", "false"
             buildConfigField "boolean", "PRO", "false"
             signingConfig signingConfigs.debug
+            buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
+            buildConfigField "boolean", "SYNCRO", "false"
         }
         debug {
             debuggable true
             minifyEnabled false
             buildConfigField "boolean", "GOOGLE_SERVICE", "true"
             buildConfigField "boolean", "PRO", "false"
+            buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
+            buildConfigField "boolean", "SYNCRO", "false"
         }
         release {
             debuggable false
@@ -32,6 +36,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "boolean", "GOOGLE_SERVICE", "true"
             buildConfigField "boolean", "PRO", "true"
+            buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
+            buildConfigField "boolean", "SYNCRO", "true"
         }
     }
     compileOptions {

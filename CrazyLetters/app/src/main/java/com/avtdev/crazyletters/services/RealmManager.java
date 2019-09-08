@@ -97,6 +97,10 @@ public class RealmManager {
         });
     }
 
+    public long getDictionaryCount(){
+        return getRealm().where(Dictionary.class).count();
+    }
+
     private void updateLanguages(Realm realm){
         long globalWords = realm.where(Dictionary.class)
                 .isNull(Dictionary.PROPERTIES.LANGUAGE)
@@ -112,7 +116,7 @@ public class RealmManager {
         List<Language> languages = new ArrayList<>();
         for(Dictionary dic : dictionaries){
             Language lan = new Language(dic.getLanguage());
-            lan.setOcurrences(realm.where(Dictionary.class).equalTo(Dictionary.PROPERTIES.LANGUAGE, dic.getLanguage()).count() + globalWords);
+            lan.setOccurrences(realm.where(Dictionary.class).equalTo(Dictionary.PROPERTIES.LANGUAGE, dic.getLanguage()).count() + globalWords);
             languages.add(lan);
         }
 
@@ -123,7 +127,7 @@ public class RealmManager {
 
     public List<Language> getLanguages(){
         Realm realm = getRealm();
-        return realm.copyFromRealm(realm.where(Language.class).findAll());
+        return realm.copyFromRealm(realm.where(Language.class).sort(Language.PROPERTIES.OCCURRENCES, Sort.DESCENDING).findAll());
     }
 
     public int getDictionaryMax(String language){
@@ -141,6 +145,10 @@ public class RealmManager {
                     .findFirst()
                     .getWordLength();
         }
+    }
+
+    public long getDefaultGamesCount(){
+        return getRealm().where(Game.class).equalTo(Game.PROPERTIES.DEFAULT_GAME, true).count();
     }
 
     public void saveDefaultGames(List<GameModeResponse> listGames){

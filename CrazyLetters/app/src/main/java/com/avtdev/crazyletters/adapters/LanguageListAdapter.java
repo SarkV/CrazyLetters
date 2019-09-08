@@ -1,11 +1,9 @@
 package com.avtdev.crazyletters.adapters;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -62,7 +60,7 @@ public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapte
             Locale loc = new Locale(lan.getLanguage());
             holder.language.setText(loc.getDisplayLanguage());
         }
-        holder.ocurrences.setText(String.valueOf(lan.getOcurrences()));
+        holder.ocurrences.setText(String.valueOf(lan.getOccurrences()));
         if(lan.isSelected()){
             holder.selected.setVisibility(View.VISIBLE);
         }else{
@@ -75,26 +73,25 @@ public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapte
     private void validateClick(int position){
         if(position == 0){
             if(mList.get(position).isSelected()){
-                mList.get(position).setSelected(false);
-            }else{
                 for(Language lan : mList){
                     lan.setSelected(false);
                 }
-                mList.get(position).setSelected(true);
+            }else{
+                for(Language lan : mList){
+                    lan.setSelected(true);
+                }
             }
         }else{
             if(mList.get(position).isSelected()){
                 mList.get(position).setSelected(false);
+                mList.get(0).setSelected(false);
             }else {
-                if (mList.get(0).isSelected()) {
-                    for(Language lan : mList){
-                        lan.setSelected(true);
-                    }
-                    mList.get(0).setSelected(false);
-                    mList.get(position).setSelected(false);
-                }else{
-                    mList.get(position).setSelected(true);
+                mList.get(position).setSelected(true);
+                boolean all = true;
+                for(Language lan : mList.subList(1, mList.size())){
+                    all = all && lan.isSelected();
                 }
+                mList.get(0).setSelected(all);
             }
         }
         notifyDataSetChanged();

@@ -9,15 +9,15 @@ public class Language extends RealmObject {
 
     public static final class PROPERTIES{
         public static final String LANGUAGE = "language";
-        public static final String OCCURENCES = "occurrences";
+        public static final String OCCURRENCES = "occurrences";
     }
 
     @PrimaryKey
     @RealmField(PROPERTIES.LANGUAGE)
     private String language;
 
-    @RealmField(PROPERTIES.OCCURENCES)
-    private long ocurrences;
+    @RealmField(PROPERTIES.OCCURRENCES)
+    private long occurrences;
 
     @Ignore
     private boolean selected;
@@ -32,7 +32,7 @@ public class Language extends RealmObject {
 
     public Language(String language, long ocurrences) {
         this.language = language;
-        this.ocurrences = ocurrences;
+        this.occurrences = ocurrences;
     }
 
     public String getLanguage() {
@@ -43,12 +43,12 @@ public class Language extends RealmObject {
         this.language = language;
     }
 
-    public long getOcurrences() {
-        return ocurrences;
+    public long getOccurrences() {
+        return occurrences;
     }
 
-    public void setOcurrences(long ocurrences) {
-        this.ocurrences = ocurrences;
+    public void setOccurrences(long occurrences) {
+        this.occurrences = occurrences;
     }
 
     public boolean isSelected() {

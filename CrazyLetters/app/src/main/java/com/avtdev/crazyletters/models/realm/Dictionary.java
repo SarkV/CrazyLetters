@@ -41,7 +41,12 @@ public class Dictionary extends RealmObject {
     }
 
     public Dictionary(DictionaryResponse dictionaryResponse) {
-        this.id = dictionaryResponse.getId();
+
+        if(dictionaryResponse.getId() == null){
+            this.id = dictionaryResponse.getLanguage() + "_" + dictionaryResponse.getWord();
+        }else{
+            this.id = dictionaryResponse.getId();
+        }
         this.word = dictionaryResponse.getWord();
         if(dictionaryResponse.getWord() != null){
             this.wordNoAccent = Normalizer.normalize(dictionaryResponse.getWord(), Normalizer.Form.NFD)
