@@ -19,10 +19,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         findViewById(R.id.btnSinglePlayer).setOnClickListener(this);
         findViewById(R.id.btnMultiplayer).setOnClickListener(this);
-        findViewById(R.id.btnInvite).setOnClickListener(this);
         findViewById(R.id.btnSeeInvitations).setOnClickListener(this);
         findViewById(R.id.btnLeaderboard).setOnClickListener(this);
         findViewById(R.id.btnSettings).setOnClickListener(this);
+        findViewById(R.id.btnExit).setOnClickListener(this);
     }
 
     @Override
@@ -34,20 +34,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 startActivity(i);
                 break;
             case R.id.btnMultiplayer:
-
-                break;
-            case R.id.btnInvite:
-
+                startActivity(new Intent(MainActivity.this, CompetitiveSelectionActivity.class));
+                finish();
                 break;
             case R.id.btnSeeInvitations:
-
                 break;
             case R.id.btnLeaderboard:
                 GoogleService.getInstance(this).showLeaderboard();
                 break;
             case R.id.btnSettings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-
+                break;
+            case R.id.btnExit:
+                showTwoBtnDialog(R.string.warning,
+                        R.string.warning_exit,
+                        R.string.exit,
+                        (dialog, which) -> finish(),
+                        R.string.cancel,
+                        (dialog, which) -> dialog.cancel());
                 break;
         }
     }

@@ -11,8 +11,9 @@ public class GameConstants {
 
     public enum Level{
         EASY,
-        NORMAL,
-        DIFFICULT
+        MEDIUM,
+        DIFFICULT,
+        IMPOSSIBLE
     }
 
     public enum LettersType{
@@ -24,4 +25,11 @@ public class GameConstants {
 
     public static int[] Velocity = new int[]{1, 2, 3, 4, 5, 6, 7};
     public static int LETTERS_DELAY = 1;
+    public static int SECONDS_TO_SOUND = 10;
+
+    public enum WordError{
+        NOT_EXIST,
+        ALREADY_DONE,
+        CREATED
+    }
 }

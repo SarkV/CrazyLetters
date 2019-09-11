@@ -24,12 +24,12 @@ public class LetterFrequency extends RealmObject {
     private String letter;
 
     @RealmField(PROPERTIES.FREQUENCY)
-    private double frequency;
+    private long frequency;
 
     public LetterFrequency() {
     }
 
-    public LetterFrequency(String language, String letter, double frequency) {
+    public LetterFrequency(String language, String letter, long frequency) {
         this.id = language + "_" + letter;
         this.language = language;
         this.letter = letter;
@@ -60,11 +60,11 @@ public class LetterFrequency extends RealmObject {
         this.letter = letter;
     }
 
-    public double getFrequency() {
+    public long getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(double frequency) {
+    public void setFrequency(long frequency) {
         this.frequency = frequency;
     }
 }

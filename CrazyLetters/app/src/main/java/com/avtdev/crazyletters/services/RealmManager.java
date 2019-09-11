@@ -3,6 +3,7 @@ package com.avtdev.crazyletters.services;
 import android.content.Context;
 
 import com.avtdev.crazyletters.BuildConfig;
+import com.avtdev.crazyletters.listeners.ISplashProgressBar;
 import com.avtdev.crazyletters.models.realm.Dictionary;
 import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.models.realm.Language;
@@ -18,12 +19,14 @@ import com.avtdev.crazyletters.utils.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import io.realm.Sort;
 
 public class RealmManager {
@@ -45,7 +48,7 @@ public class RealmManager {
         } else{
             config = new RealmConfiguration.Builder()
                     .deleteRealmIfMigrationNeeded()
-                    .initialData(new LetterFrequencyTransaction())
+                    //.initialData(new LetterFrequencyTransaction())
                     .build();
         }
 
@@ -77,22 +80,45 @@ public class RealmManager {
         return getRealm().where(SyncInfo.class).equalTo(SyncInfo.PROPERTIES.TABLE, table).findFirst();
     }
 
-    public void setDictionary(List<DictionaryResponse> response){
+    public void setDictionary(List<DictionaryResponse> response, ISplashProgressBar listener){
         getRealm().executeTransaction((Realm realm) -> {
             if(response != null && !response.isEmpty()){
-                List<Dictionary> dictionaries = new ArrayList<>();
-                List<Dictionary> dictionariesRemove = new ArrayList<>();
+                List<String> toRemove = new ArrayList<>();
+                List<String> toAdd = new ArrayList<>();
+
+                HashMap<String, Long> lanToRemove = new HashMap<>();
+                HashMap<String, Long> lanToAdd = new HashMap<>();
+
+                int i = 0;
+
                 for(DictionaryResponse dictionaryResponse : response){
-                    if(Utils.isNull(dictionaryResponse.getWord())){
-                        dictionariesRemove.add(new Dictionary(dictionaryResponse));
-                    }else{
-                        dictionaries.add(new Dictionary(dictionaryResponse));
+                    Dictionary dictionary = realm.where(Dictionary.class).equalTo(Dictionary.PROPERTIES.ID, dictionaryResponse.getId()).findFirst();
+                    if(dictionary == null && !Utils.isNull(dictionaryResponse.getWord())){
+                        dictionary = new Dictionary(dictionaryResponse);
+                        realm.insertOrUpdate(dictionary);
+                        toAdd.add(dictionary.getWord() + Constants.ARRAY_SEPARATOR + dictionary.getLanguage());
+                        lanToAdd.put(dictionary.getLanguage(), lanToAdd.getOrDefault(dictionary.getLanguage(), 0L) + 1);
+                    }else if(dictionary != null){
+                        if(Utils.isNull(dictionaryResponse.getWord())){
+                            toRemove.add(dictionary.getWord() + Constants.ARRAY_SEPARATOR + dictionary.getLanguage());
+                            lanToRemove.put(dictionary.getLanguage(), lanToRemove.getOrDefault(dictionary.getLanguage(), 0L) + 1);
+                            dictionary.deleteFromRealm();
+                        }else{
+                            toRemove.add(dictionary.getWord() + Constants.ARRAY_SEPARATOR + dictionary.getLanguage());
+                            lanToRemove.put(dictionary.getLanguage(), lanToRemove.getOrDefault(dictionary.getLanguage(), 0L) + 1);
+                            dictionary.setWord(dictionaryResponse.getWord());
+                            realm.insertOrUpdate(dictionary);
+                            toAdd.add(dictionary.getWord() + Constants.ARRAY_SEPARATOR + dictionary.getLanguage());
+                            lanToAdd.put(dictionary.getLanguage(), lanToAdd.getOrDefault(dictionary.getLanguage(), 0L) + 1);
+                        }
                     }
+                    if(i % 100 == 0) listener.addProgress();
+                    i++;
                 }
 
-                realm.copyToRealmOrUpdate(dictionaries);
-
-                updateLanguages(realm);
+                updateLanguages(lanToAdd, lanToRemove, realm);
+                listener.addProgress();
+                updateFrequencies(toAdd, toRemove, realm);
             }
         });
     }
@@ -101,28 +127,81 @@ public class RealmManager {
         return getRealm().where(Dictionary.class).count();
     }
 
-    private void updateLanguages(Realm realm){
-        long globalWords = realm.where(Dictionary.class)
-                .isNull(Dictionary.PROPERTIES.LANGUAGE)
-                .or()
-                .isEmpty(Dictionary.PROPERTIES.LANGUAGE)
-                .count();
-
-        RealmResults<Dictionary> dictionaries = realm.where(Dictionary.class)
-                .isNotNull(Dictionary.PROPERTIES.LANGUAGE)
-                .distinct(Dictionary.PROPERTIES.LANGUAGE).findAll();
-
-
-        List<Language> languages = new ArrayList<>();
-        for(Dictionary dic : dictionaries){
-            Language lan = new Language(dic.getLanguage());
-            lan.setOccurrences(realm.where(Dictionary.class).equalTo(Dictionary.PROPERTIES.LANGUAGE, dic.getLanguage()).count() + globalWords);
-            languages.add(lan);
+    private void updateLanguages(HashMap<String, Long> toAdd, HashMap<String, Long> toRemove, Realm realm){
+        List<Language> languages = realm.where(Language.class).sort(Language.PROPERTIES.LANGUAGE, Sort.ASCENDING).findAll();
+        long total = 0;
+        boolean firstLoad = languages.size() == 0;
+        for(Language lan : languages){
+            if(toAdd.containsKey(lan.getLanguage())){
+                long val = toAdd.remove(lan.getLanguage());
+                lan.setOccurrences(lan.getOccurrences() + val);
+                total += val;
+            }
+            if(toRemove.containsKey(lan.getLanguage())){
+                long val = toRemove.remove(lan.getLanguage());
+                lan.setOccurrences(lan.getOccurrences() - val);
+                total -= val;
+            }
         }
 
-        languages.add(new Language("", realm.where(Dictionary.class).count()));
+        for(Map.Entry<String, Long> entry : toAdd.entrySet()){
+            languages.add(new Language(entry.getKey(), entry.getValue()));
+            total += entry.getValue();
+        }
+
+        if(firstLoad){
+            languages.add(new Language("", total));
+        }else{
+            for(Language lan : languages){
+                if(Utils.isNull(lan.getLanguage())){
+                    lan.setOccurrences(lan.getOccurrences() + total);
+                }
+            }
+        }
 
         realm.insertOrUpdate(languages);
+    }
+
+    private void updateFrequencies(List<String> toAdd, List<String> toRemove, Realm realm){
+        HashMap<String, LetterFrequency> frequencies = new HashMap<>();
+
+        List<LetterFrequency> listFrequencies = realm.where(LetterFrequency.class).findAll();
+        for(LetterFrequency letterFrequency : listFrequencies){
+            frequencies.put(letterFrequency.getLanguage() + letterFrequency.getLetter(), letterFrequency);
+        }
+
+        for(String word : toAdd){
+            String[] split = word.split(Constants.ARRAY_SEPARATOR);
+            for(int i = 0; i< split[0].length(); i++){
+                LetterFrequency letterFrequency;
+                String c = String.valueOf(split[0].charAt(i));
+                String key = split[1] + c;
+                if(frequencies.containsKey(key)){
+                    letterFrequency = frequencies.get(key);
+                    letterFrequency.setFrequency(letterFrequency.getFrequency() + 1);
+                }else{
+                    letterFrequency = new LetterFrequency(split[1], c, 1);
+                }
+                frequencies.put(key, letterFrequency);
+            }
+        }
+
+        for(String word : toRemove){
+            String[] split = word.split(Constants.ARRAY_SEPARATOR);
+            for(int i = 0; i< split[0].length(); i++){
+                LetterFrequency letterFrequency;
+                String c = String.valueOf(split[0].charAt(i));
+                String key = split[1] + c;
+                if(frequencies.containsKey(key)){
+                    letterFrequency = frequencies.get(key);
+                    letterFrequency.setFrequency(letterFrequency.getFrequency() - 1);
+                    frequencies.put(key, letterFrequency);
+                }
+            }
+        }
+
+        realm.insertOrUpdate(frequencies.values());
+
     }
 
     public List<Language> getLanguages(){
@@ -262,6 +341,13 @@ public class RealmManager {
 
     public Game getLastGame(){
         return getRealm().where(Game.class).sort(Game.PROPERTIES.LAST_USED, Sort.DESCENDING).findFirst();
+    }
+
+    public Game getDefaultGame(String name){
+        if(name == null) return null;
+        Realm realm = getRealm();
+        Game game = realm.where(Game.class).equalTo(Game.PROPERTIES.NAME, name, Case.INSENSITIVE).findFirst();
+        return game != null ? realm.copyFromRealm(game) : null;
     }
 
     public Game getGame(Long id){

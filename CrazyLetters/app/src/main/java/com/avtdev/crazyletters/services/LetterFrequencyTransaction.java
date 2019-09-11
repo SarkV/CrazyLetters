@@ -8,7 +8,7 @@ public class LetterFrequencyTransaction implements Realm.Transaction {
 
     @Override
     public void execute(Realm realm) {
-        realm.insertOrUpdate(new LetterFrequency("cs", "A", 8.421));
+        /*realm.insertOrUpdate(new LetterFrequency("cs", "A", 8.421));
         realm.insertOrUpdate(new LetterFrequency("cs", "B", 0.822));
         realm.insertOrUpdate(new LetterFrequency("cs", "C", 0.74));
         realm.insertOrUpdate(new LetterFrequency("cs", "D", 3.475));
@@ -1183,6 +1183,6 @@ public class LetterFrequencyTransaction implements Realm.Transaction {
         realm.insertOrUpdate(new LetterFrequency("tr", "Ů", 0));
         realm.insertOrUpdate(new LetterFrequency("tr", "Ź", 0));
         realm.insertOrUpdate(new LetterFrequency("tr", "Ż", 0));
-        realm.insertOrUpdate(new LetterFrequency("tr", "Ž", 0));
+        realm.insertOrUpdate(new LetterFrequency("tr", "Ž", 0));*/
     }
 }

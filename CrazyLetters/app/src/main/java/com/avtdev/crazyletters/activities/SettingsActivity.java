@@ -18,6 +18,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
 
     Switch swAllowInvitations;
     Switch swShowNotifications;
+    Switch swEnableSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +27,12 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
 
         swShowNotifications = findViewById(R.id.swShowNotifications);
         swAllowInvitations = findViewById(R.id.swAllowInvitations);
+        swEnableSound = findViewById(R.id.swEnableSound);
+
 
         swShowNotifications.setChecked(Utils.getBooleanSharedPreferences(this, Constants.Preferences.SHOW_NOTIFICATIONS.name(), true));
         swAllowInvitations.setChecked(Utils.getBooleanSharedPreferences(this, Constants.Preferences.ALLOW_INVITATIONS.name(), true));
+        swEnableSound.setChecked(Utils.getBooleanSharedPreferences(this, Constants.Preferences.ENABLE_SOUND.name(), true));
 
         findViewById(R.id.btnSave).setOnClickListener(this);
         findViewById(R.id.btnCancel).setOnClickListener(this);
@@ -46,6 +50,10 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 Utils.setSharedPreferences(this,
                         Constants.Preferences.ALLOW_INVITATIONS.name(),
                         swAllowInvitations.isChecked());
+
+                Utils.setSharedPreferences(this,
+                        Constants.Preferences.ENABLE_SOUND.name(),
+                        swEnableSound.isChecked());
             case R.id.btnCancel:
                 finish();
                 break;

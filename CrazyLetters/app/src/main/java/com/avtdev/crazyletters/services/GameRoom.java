@@ -3,6 +3,7 @@ package com.avtdev.crazyletters.services;
 import android.content.Context;
 
 import com.avtdev.crazyletters.models.realm.Dictionary;
+import com.avtdev.crazyletters.utils.GameConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import io.realm.RealmQuery;
 public class GameRoom {
 
     public interface IGameRoom{
-        void modifyPuntuations(int[] puntuations);
+        void modifyPuntuations(String word, boolean isPlayer, int[] puntuations);
     }
 
     private static GameRoom sInstance;
@@ -77,26 +78,26 @@ public class GameRoom {
         mHasAccent = null;
     }
 
-    public boolean checkPlayerWord(String word){
+    public GameConstants.WordError checkPlayerWord(String word){
         for(List<String> listWord : mWordsDone){
             if(listWord.contains(word)){
-                return false;
+                return GameConstants.WordError.ALREADY_DONE;
             }
         }
         if(checkWord(word)){
-            addWord(word);
-            return true;
+            addWord(word, true);
+            return GameConstants.WordError.CREATED;
         }else{
-            return false;
+            return GameConstants.WordError.NOT_EXIST;
         }
     }
 
-    private void addWord(String word){
+    private void addWord(String word, boolean isPlayer){
         mWordsDone.get(0).add(word);
-        checkPuntuations();
+        checkPuntuations(word, isPlayer);
     }
 
-    private void checkPuntuations(){
+    private void checkPuntuations(String newWord, boolean isPlayer){
         int[] puntuations = new int[]{0,0};
 
         for(int i = 0; i < mWordsDone.size(); i++){
@@ -112,6 +113,6 @@ public class GameRoom {
                 }
             }
         }
-        mListener.modifyPuntuations(puntuations);
+        mListener.modifyPuntuations(newWord, isPlayer, puntuations);
     }
 }

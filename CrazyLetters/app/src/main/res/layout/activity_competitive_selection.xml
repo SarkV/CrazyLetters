@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryLight"
+    tools:context=".activities.CompetitiveSelectionActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorSecondaryLight"
+        android:text="@string/game_mode_selection"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/competitive_btn_vertical_margin"
+        android:layout_marginEnd="@dimen/competitive_btn_vertical_margin"
+        android:layout_marginTop="@dimen/competitive_btn_vertical_margin"
+        android:layout_marginBottom="@dimen/competitive_btn_horizontal_margin"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/title">
+
+        <Button
+            android:id="@+id/btnEasy"
+            style="@style/ButtoCompetitive"
+            android:text="@string/easy"/>
+
+        <Button
+            android:id="@+id/btnMedium"
+            style="@style/ButtoCompetitive"
+            android:text="@string/medium"/>
+
+        <Button
+            android:id="@+id/btnDifficult"
+            style="@style/ButtoCompetitive"
+            android:text="@string/difficult"/>
+
+        <Button
+            android:id="@+id/btnImpossible"
+            style="@style/ButtoCompetitive"
+            android:text="@string/impossible"/>
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnBack"
+        style="@style/Button"
+        android:drawableStart="@drawable/ic_back"
+        android:text="@string/back"
+        android:layout_margin="@dimen/competitive_btn_vertical_margin"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

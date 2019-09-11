@@ -3,12 +3,15 @@ package com.avtdev.crazyletters.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.listeners.ISplashProgressBar;
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
 import com.avtdev.crazyletters.models.response.GameModeResponse;
 import com.avtdev.crazyletters.services.ConstantGS;
@@ -21,41 +24,59 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Scanner;
 
-public class SplashActivity extends BaseActivity {
-
+public class SplashActivity extends BaseActivity implements ISplashProgressBar {
     private static String TAG = "SplashActivity";
 
     int numberOfSync = Constants.Firebase.NUMSINCRO;
 
-    long buildSincro;
+    TextView mProgressBarText;
+    ProgressBar mProgressbar;
+
+    int mProgress = 0;
+    int mTotalProgress = 4;
+
+    long mBuildSincro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        mProgressbar = findViewById(R.id.progressBar);
+        mProgressBarText = findViewById(R.id.progressBarText);
+
+        mProgressbar.setMax(mTotalProgress);
+
+        mProgress = 0;
+        mTotalProgress = 2;
+        setProgress();
+
         Long lastSincroDictionary = Utils.getLongSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), 0L);
         Long lastSincroGameModes = Utils.getLongSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_GAME_MODES.name(), 0L);
 
-        buildSincro = Utils.getUTCDate(BuildConfig.LAST_BUILD);
-
-        if(BuildConfig.SYNCRO){
-            if(buildSincro > lastSincroDictionary){
-                new Handler().postDelayed(() -> getOfflineDictionary(true), 1000);
+        mBuildSincro = Utils.getUTCDate(BuildConfig.LAST_BUILD);
+        if(!BuildConfig.SYNCRO){
+            if(mBuildSincro > lastSincroDictionary){
+                new Handler().postDelayed(() -> getOfflineDictionary( true), 1000);
             }else{
                 getDataDictionary(lastSincroDictionary);
             }
-            if(buildSincro > lastSincroGameModes){
+            if(mBuildSincro > lastSincroGameModes){
                 new Handler().postDelayed(() -> getOfflineGames(true), 1000);
             }else{
                 getDataGames(lastSincroGameModes);
@@ -64,6 +85,24 @@ public class SplashActivity extends BaseActivity {
             login();
             login();
         }
+    }
+
+    @Override
+    public void addProgress() {
+        mProgress++;
+        setProgress();
+    }
+
+    public void setProgress() {
+        mProgressbar.setMax(mTotalProgress);
+        mProgressbar.setProgress(0);
+        mProgressbar.setProgress(mProgress);
+        mProgressBarText.setText(mProgress + " / " + mTotalProgress);
+    }
+
+    private void setTotalProgress(long totalProgress){
+        mTotalProgress = Math.round(totalProgress / 100) + 3;
+        setProgress();
     }
 
     private void getDataDictionary(Long lastSyncro){
@@ -80,6 +119,9 @@ public class SplashActivity extends BaseActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Logger.d(TAG, "dictionary_onDataChange", dataSnapshot.getChildrenCount());
 
+                mProgress = 0;
+                setTotalProgress(dataSnapshot.getChildrenCount());
+
                 try{
 
                     List<DictionaryResponse> listResponse = new ArrayList<>();
@@ -91,13 +133,15 @@ public class SplashActivity extends BaseActivity {
                         }
                     }
 
-                    RealmManager.getInstance(SplashActivity.this).setDictionary(listResponse);
+                    RealmManager.getInstance(SplashActivity.this).setDictionary(listResponse, SplashActivity.this);
 
                     Utils.setSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), currentTime);
 
                 }catch (Exception e){
                     Logger.e(TAG, "dictionary_onDataChange", e.getMessage());
                 }
+
+                addProgress();
                 login();
             }
             @Override
@@ -120,7 +164,6 @@ public class SplashActivity extends BaseActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Logger.d(TAG, "gameMode_onDataChange", dataSnapshot.getChildrenCount());
-
                 try{
 
                     List<GameModeResponse> listResponse = new ArrayList<>();
@@ -137,10 +180,12 @@ public class SplashActivity extends BaseActivity {
 
                     Utils.setSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_GAME_MODES.name(), currentTime);
 
+                    addProgress();
                 }catch (Exception e){
                     Logger.e(TAG, "gameMode_onDataChange", e.getMessage());
                 }
 
+                addProgress();
                 login();
             }
             @Override
@@ -154,18 +199,31 @@ public class SplashActivity extends BaseActivity {
     private void getOfflineDictionary(boolean updateTime){
         Logger.d(TAG, "getOfflineDictionary");
         Gson gson = new Gson();
+        Long lastSincroDictionary = Utils.getLongSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), 0L);
+
         InputStream inputStream = null;
         try{
             inputStream = getResources().openRawResource(R.raw.total_words);
 
             String jsonString = new Scanner(inputStream).useDelimiter("\\A").next();
-            DictionaryResponse[] dictionaryResponse = gson.fromJson(jsonString, DictionaryResponse[].class);
+            DictionaryResponse[] listDictionaryResponse = gson.fromJson(jsonString, DictionaryResponse[].class);
+            List<DictionaryResponse> dictionaryList = new ArrayList<>();
 
-            List<DictionaryResponse> dictionaryList = new ArrayList<>(Arrays.asList(dictionaryResponse));
-            RealmManager.getInstance(this).setDictionary(dictionaryList);
+            for(DictionaryResponse dictionaryResponse : listDictionaryResponse){
+                if(dictionaryResponse.getCreatedAt() >= lastSincroDictionary){
+                    dictionaryList.add(dictionaryResponse);
+                }
+            }
+
+            if(dictionaryList.size() > 0){
+                setTotalProgress(dictionaryList.size());
+
+                RealmManager.getInstance(this).setDictionary(dictionaryList, SplashActivity.this);
+
+            }
 
             if(updateTime){
-                Utils.setSharedPreferences(this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), buildSincro);
+                Utils.setSharedPreferences(this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), mBuildSincro);
             }
         }catch (Exception ex){
             Logger.e(TAG, "getOfflineDictionary", ex);
@@ -174,6 +232,8 @@ public class SplashActivity extends BaseActivity {
                 if(inputStream != null)
                     inputStream.close();
             }catch (Exception ex){}
+
+            addProgress();
             login();
         }
     }
@@ -193,7 +253,7 @@ public class SplashActivity extends BaseActivity {
             RealmManager.getInstance(this).saveDefaultGames(gameModeList);
 
             if(updateTime){
-                Utils.setSharedPreferences(this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), buildSincro);
+                Utils.setSharedPreferences(this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), mBuildSincro);
             }
         }catch (Exception ex){
             Logger.e(TAG, "getOfflineGames", ex);
@@ -202,6 +262,8 @@ public class SplashActivity extends BaseActivity {
                 if(inputStream != null)
                     inputStream.close();
             }catch (Exception ex){}
+
+            addProgress();
             login();
         }
     }
@@ -214,10 +276,14 @@ public class SplashActivity extends BaseActivity {
             if(countDictionary == 0 || countGames == 0){
                 if(countDictionary == 0){
                     numberOfSync++;
+                    mTotalProgress++;
+                    setProgress();
                     getOfflineDictionary(false);
                 }
                 if(countGames == 0){
                     numberOfSync++;
+                    mTotalProgress++;
+                    setProgress();
                     getOfflineGames(false);
                 }
             }else{

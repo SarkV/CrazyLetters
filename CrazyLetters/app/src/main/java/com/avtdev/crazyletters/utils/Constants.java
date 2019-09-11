@@ -18,6 +18,7 @@ public class Constants {
         NAME,
         SHOW_NOTIFICATIONS,
         ALLOW_INVITATIONS,
+        ENABLE_SOUND,
         LAST_SYNC_DICTIONARY,
         LAST_SYNC_GAME_MODES
     }

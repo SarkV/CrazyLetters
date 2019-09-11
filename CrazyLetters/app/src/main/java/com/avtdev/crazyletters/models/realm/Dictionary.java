@@ -34,6 +34,7 @@ public class Dictionary extends RealmObject {
     @RealmField(PROPERTIES.WORD_LENGTH)
     private int wordLength;
 
+    @Index
     @RealmField(PROPERTIES.LANGUAGE)
     private String language;
 

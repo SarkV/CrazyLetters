@@ -1,5 +1,6 @@
 package com.avtdev.crazyletters.activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -16,6 +17,7 @@ import com.avtdev.crazyletters.services.RealmManager;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.GameConstants;
 import com.avtdev.crazyletters.utils.Logger;
+import com.avtdev.crazyletters.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,10 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
     ProgressBar mBestPuntuationPB;
     TextView mBestPuntuationTv;
 
+    TextView mLastWordPlayer, mLastWord;
+
     int mMaxWordLength;
+    boolean mSoundEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +75,10 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
             mPlayerPuntuationTv = findViewById(R.id.tvPlayerPuntuation);
             mBestPuntuationPB = findViewById(R.id.pbBestContraryPuntuation);
             mBestPuntuationTv = findViewById(R.id.tvBestContraryPuntuation);
+
+            mLastWordPlayer = findViewById(R.id.tvLastWordPlayer);
+            mLastWord = findViewById(R.id.tvLastWord);
+
             findViewById(R.id.ivRemove).setOnClickListener(this);
             findViewById(R.id.ivSend).setOnClickListener(this);
 
@@ -112,11 +121,17 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
 
     private void initializeTime(){
         if(mGame.getTime() > 0){
+            mSoundEnabled = Utils.getBooleanSharedPreferences(this, Constants.Preferences.ENABLE_SOUND.name(), true);
+
             new CountDownTimer(mGame.getTime() * 60000, 1000){
                 public void onTick(long millisUntilFinished) {
                     int seconds = (int) (millisUntilFinished / 1000);
                     int minutes = seconds / 60;
                     seconds -= minutes * 60;
+
+                    if(mSoundEnabled && minutes == 0 && seconds == GameConstants.SECONDS_TO_SOUND){
+                        //TODO --> Start sound
+                    }
 
                     mTime.setText(String.format("%02d:%02d", minutes, seconds));
                 }
@@ -146,12 +161,18 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
                 mCurrentWord.setText("");
                 break;
             case R.id.ivSend:
-                if(mGameRoom.checkPlayerWord(mCurrentWord.getText().toString())){
-                    mCurrentWord.setText("");
-                }else{
-                    mCurrentWord.setTextColor(getColor(R.color.red));
+                GameConstants.WordError wordError = mGameRoom.checkPlayerWord(mCurrentWord.getText().toString());
+                switch (wordError){
+                    case CREATED:
+                        mCurrentWord.setText("");
+                        break;
+                    case ALREADY_DONE:
+                        mCurrentWord.setTextColor(getColor(R.color.blue));
+                        break;
+                    case NOT_EXIST:
+                        mCurrentWord.setTextColor(getColor(R.color.red));
+                        break;
                 }
-                break;
         }
     }
 
@@ -161,12 +182,49 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void modifyPuntuations(int[] puntuations) {
+    public void modifyPuntuations(String word, boolean isPLayer, int[] puntuations) {
         int total = puntuations[0] + puntuations[1];
         mPlayerPuntuationTv.setText(String.valueOf(puntuations[0]));
         mPlayerPuntuationPB.setProgress((puntuations[0]  * 100 ) / total);
 
         mBestPuntuationTv.setText((String.valueOf(puntuations[1])));
         mBestPuntuationPB.setProgress((puntuations[1]  * 100 ) / total);
+
+        if(isPLayer){
+            mLastWordPlayer.setText(word);
+        }else{
+            mLastWord.setText(word);
+        }
+    }
+
+    public void exit(){
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        int message = 0;
+        switch (mGameMode){
+            case DEMO:
+                message = R.string.warning_exit_demo;
+                break;
+            case SINGLE_PLAYER:
+                message = R.string.warning_exit_single;
+                break;
+            case MULTI_PLAYER:
+                message = R.string.warning_exit_multiplayer;
+                break;
+            case INVITATION:
+                message = R.string.warning_exit_invitation;
+                break;
+        }
+        if(message > 0){
+            showTwoBtnDialog(R.string.warning,
+                    message,
+                    R.string.exit,
+                    (dialog, which) -> exit(),
+                    R.string.cancel,
+                    (dialog, which) -> dialog.cancel());
+        }
     }
 }

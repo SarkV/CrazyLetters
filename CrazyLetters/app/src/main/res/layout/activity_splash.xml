@@ -12,15 +12,43 @@
         android:layout_height="match_parent"
         android:src="@drawable/ic_logo"/>
 
+    <RelativeLayout
+        android:id="@+id/rlProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="30dp">
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:progressBackgroundTint="@color/colorSecondaryDark"
+            android:progressTint="@color/colorSecondaryLight"/>
+
+        <TextView
+            android:id="@+id/progressBarText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/colorPrimaryLight"
+            android:textStyle="bold"
+            android:textSize="@dimen/progress_bar_text_size"
+            android:text="0/4"
+            android:gravity="center"
+            />
+    </RelativeLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textStyle="bold"
-        android:textSize="30sp"
+        android:textSize="@dimen/loading_text_size"
         android:textColor="@color/colorSecondaryLight"
         android:text="@string/loading"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="30dp"/>
+        android:layout_above="@id/rlProgressBar"/>
 
 </RelativeLayout>

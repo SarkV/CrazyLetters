@@ -18,7 +18,7 @@
         android:layout_marginBottom="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:textColor="@color/colorSecondary"
+        android:textColor="@color/colorSecondaryLight"
         android:fontFamily="@font/storm"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,33 +51,33 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <Button
-                android:id="@+id/btnInvite"
+                android:id="@+id/btnSeeInvitations"
                 style="@style/MenuButton"
                 android:drawableStart="@drawable/ic_invite"
                 android:text="@string/invitations"/>
-
             <Button
-                android:id="@+id/btnSeeInvitations"
+                android:id="@+id/btnLeaderboard"
                 style="@style/MenuButton"
-                android:drawableStart="@drawable/ic_shop"
-                android:text="@string/shop"/>
+                android:drawableStart="@drawable/ic_leaderboard"
+                android:text="@string/leaderboard"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <Button
-                android:id="@+id/btnLeaderboard"
-                style="@style/MenuButton"
-                android:drawableStart="@drawable/ic_leaderboard"
-                android:text="@string/leaderboard"/>
 
             <Button
                 android:id="@+id/btnSettings"
                 style="@style/MenuButton"
                 android:drawableStart="@drawable/ic_settings"
                 android:text="@string/settings"/>
+
+            <Button
+                android:id="@+id/btnExit"
+                style="@style/MenuButton"
+                android:drawableStart="@drawable/ic_power"
+                android:text="@string/exit"/>
         </LinearLayout>
 
     </LinearLayout>

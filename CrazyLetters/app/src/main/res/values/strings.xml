@@ -10,7 +10,6 @@
     <string name="invite_players">Invite</string>
     <string name="inv_popup_text">Incoming invitation!</string>
     <string name="see_invitations">See invitations</string>
-    <string name="shop">Shop</string>
     <string name="settings">Settings</string>
     <string name="leaderboard">Leaderboard</string>
     <string name="sign_out">Sign Out</string>
@@ -19,6 +18,13 @@
     <string name="game_name">Game Name</string>
     <string name="game_name_short">Name</string>
     <string name="languages">Languages</string>
+    <string name="game_mode_selection">Game Mode Selection</string>
+
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="difficult">Difficult</string>
+    <string name="impossible">Impossible</string>
+    <string name="back">Back</string>
 
     <!--Dialogs-->
     <string name="game_save_title">Game Saved</string>
@@ -34,9 +40,15 @@
     <string name="retry">Retry</string>
     <string name="exit">Exit</string>
 
+    <string name="warning_exit">Do you want to exit?</string>
     <string name="warning_game_override">There will be removed the changes that you have done. Do you want to continue?</string>
     <string name="warning_remove_game">Are you sure that you want to remove the game configuration? (this action cannot be redone)</string>
     <string name="warning_game_not_saved">Do you want to saved the configuration? (Clicking \'Cancel\' you will play with the configuration, but it will not be saved).</string>
+    <string name="warning_exit_demo">Do you want to exit from the demo? You can redo it in settings.</string>
+    <string name="warning_exit_single">Do you want to finish the game?</string>
+    <string name="warning_exit_multiplayer">If you exit the game it will be marked as lost. Are you sure that you want to exit the game?</string>
+    <string name="warning_exit_invitation_leader">Do you want to finish the game?</string>
+    <string name="warning_exit_invitation">Do you want to exit from the game? If the game has not finished yet, you can reenter clicking again in the invitation.</string>
 
     <string name="infinite" translatable="false">\u221E</string>
     <string name="cross" translatable="false">\u2718</string>
@@ -71,6 +83,7 @@
     <!--Setings options-->
     <string name="show_notifications">Show Notifications</string>
     <string name="allow_invitations">Allow Invitations</string>
+    <string name="enableSound">Enable Sound</string>
     <string name="save">Save</string>
     <string name="load_game">Load</string>
     <string name="cancel">Cancel</string>
