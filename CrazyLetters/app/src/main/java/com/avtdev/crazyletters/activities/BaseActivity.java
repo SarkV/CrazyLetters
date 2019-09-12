@@ -15,15 +15,50 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.utils.Constants;
+import com.avtdev.crazyletters.utils.Utils;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.games.GamesActivityResultCodes;
 
 public class BaseActivity extends AppCompatActivity {
 
     ProgressBar mProgressBar;
+    static Boolean adsEnabled;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
+
+        if(adsEnabled == null || !adsEnabled){
+            adsEnabled = false;
+            MobileAds.initialize(this, initializationStatus -> adsEnabled = true);
+        }
+    }
+
+    protected boolean areAdsEnabled(){
+        long withoutAds = Utils.getLongSharedPreferences(this, Constants.Preferences.WITHOUT_ADS.name(), 0L);
+        return Utils.getUTCDate() >= withoutAds;
+    }
+
+    protected void setBannerAd(){
+        if(areAdsEnabled()){
+            AdView mAdView = findViewById(R.id.adView);
+            if(mAdView != null){
+                AdRequest adRequest = new AdRequest.Builder().build();
+                mAdView.loadAd(adRequest);
+            }
+        }
+    }
+
+    protected void hideAds(){
+        AdView mAdView = findViewById(R.id.adView);
+        if(mAdView != null){
+            mAdView.destroy();
+        }
     }
 
     public void showOneBtnDialog(Integer title, Object message, Integer positiveMessage, DialogInterface.OnClickListener positiveListener){

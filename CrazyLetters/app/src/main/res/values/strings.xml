@@ -84,6 +84,7 @@
     <string name="show_notifications">Show Notifications</string>
     <string name="allow_invitations">Allow Invitations</string>
     <string name="enableSound">Enable Sound</string>
+    <string name="removeAds">Remove ads for 2 hours</string>
     <string name="save">Save</string>
     <string name="load_game">Load</string>
     <string name="cancel">Cancel</string>

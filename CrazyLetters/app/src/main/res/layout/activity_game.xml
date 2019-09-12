@@ -78,7 +78,6 @@
         </RelativeLayout>
     </LinearLayout>
 
-
     <LinearLayout
         android:id="@+id/llLastWords"
         android:layout_width="match_parent"
@@ -131,7 +130,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/definition_inter_margin"
-        android:layout_alignParentBottom="true">
+        android:layout_above="@id/adView">
 
       <TextView
             android:id="@+id/tvCurrentWord"
@@ -162,4 +161,10 @@
             android:tint="@color/colorSecondary"/>
     </LinearLayout>
 
+    <include
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/ad_view" />
 </RelativeLayout>

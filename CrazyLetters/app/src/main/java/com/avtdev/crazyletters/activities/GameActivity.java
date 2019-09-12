@@ -49,6 +49,8 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        setBannerAd();
+
         try{
             if(getIntent() != null && getIntent().getExtras() != null){
                 long id = getIntent().getExtras().getLong(Constants.Extras.GAME.name());

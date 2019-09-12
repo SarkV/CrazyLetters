@@ -16,6 +16,14 @@ public class CompetitiveSelectionActivity extends BaseActivity implements View.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_competitive_selection);
+
+        setBannerAd();
+
+        findViewById(R.id.btnEasy).setOnClickListener(this);
+        findViewById(R.id.btnMedium).setOnClickListener(this);
+        findViewById(R.id.btnDifficult).setOnClickListener(this);
+        findViewById(R.id.btnImpossible).setOnClickListener(this);
+        findViewById(R.id.btnBack).setOnClickListener(this);
     }
 
     @Override

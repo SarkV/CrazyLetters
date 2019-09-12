@@ -15,6 +15,7 @@ import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -151,6 +152,20 @@ public class Utils {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return Long.parseLong(simpleDateFormat.format(date));
+    }
+
+    public static long getDifferenceDates(long currentDate, long date2){
+        try{
+            String pattern = "yyyyMMddHHmm";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Long d1 = simpleDateFormat.parse(String.valueOf(currentDate)).getTime();
+            Long d2 = simpleDateFormat.parse(String.valueOf(date2)).getTime();
+            return d2 - d1;
+        }catch (Exception e){
+            Logger.e(TAG, "getDifferenceDates", e);
+        }
+        return 0;
     }
 
     public static float getRandomFloat(float min, float max){

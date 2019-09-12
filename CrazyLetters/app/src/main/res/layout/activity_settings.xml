@@ -55,6 +55,44 @@
         android:layout_marginTop="10dp"
         android:textColor="@color/colorSecondaryLight"
         android:layout_below="@id/swAllowInvitations"/>
+
+    <RelativeLayout
+        android:id="@+id/rlRemoveAds"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/swEnableSound">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enableSound"
+            android:textColor="@color/colorSecondaryLight"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_alignParentStart="true"/>
+
+        <ImageView
+            android:id="@+id/ivRemoveAds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryLight"
+            android:src="@drawable/ic_remove"
+            android:tint="@color/colorSecondaryLight"
+            android:layout_alignParentEnd="true"/>
+
+        <TextView
+            android:id="@+id/tvRemoveAds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondaryLight"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_alignParentEnd="true"/>
+
+
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/btnSignOut"
         android:layout_width="match_parent"
@@ -66,11 +104,19 @@
         android:textColor="@color/colorSecondaryLight"
         android:gravity="center"
         android:layout_above="@id/llBottom" />
+
+    <include
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/ad_view" />
+
     <LinearLayout
         android:id="@+id/llBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/adView"
         android:orientation="horizontal">
         <Button
             android:id="@+id/btnCancel"
@@ -80,7 +126,6 @@
             android:id="@+id/btnSave"
             style="@style/MenuButton"
             android:text="@string/save"/>
-
 
     </LinearLayout>
 

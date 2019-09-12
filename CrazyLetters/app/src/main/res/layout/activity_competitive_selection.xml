@@ -58,6 +58,13 @@
         android:drawableStart="@drawable/ic_back"
         android:text="@string/back"
         android:layout_margin="@dimen/competitive_btn_vertical_margin"
-        android:layout_alignParentBottom="true"/>
+        android:layout_above="@id/adView"/>
+
+    <include
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/ad_view" />
 
 </RelativeLayout>

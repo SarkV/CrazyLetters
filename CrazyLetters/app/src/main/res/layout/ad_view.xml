@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.gms.ads.AdView
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:layout_centerHorizontal="true"
+    android:layout_alignParentBottom="true"
+    ads:adSize="SMART_BANNER"
+    ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--ads:adUnitId="ca-app-pub-4136978037886351/2881168267"-->
+</com.google.android.gms.ads.AdView>
