@@ -27,6 +27,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:textSize">@dimen/definition_text_size</item>
         <item name="android:layout_marginTop">@dimen/competitive_btn_vertical_margin</item>
         <item name="android:layout_marginBottom">@dimen/competitive_btn_vertical_margin</item>
         <item name="android:layout_marginLeft">@dimen/competitive_btn_horizontal_margin</item>

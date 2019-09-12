@@ -10,10 +10,20 @@ public class GameConstants {
     }
 
     public enum Level{
-        EASY,
-        MEDIUM,
-        DIFFICULT,
-        IMPOSSIBLE
+        EASY(0x1),
+        MEDIUM(0x2),
+        DIFFICULT(0x4),
+        IMPOSSIBLE(0x8);
+
+        private long value;
+
+        public long getValue() {
+            return value;
+        }
+
+        private Level(long value){
+            this.value = value;
+        }
     }
 
     public enum LettersType{

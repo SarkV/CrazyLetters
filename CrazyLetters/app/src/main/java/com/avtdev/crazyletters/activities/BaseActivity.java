@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.Utils;
@@ -28,6 +29,7 @@ public class BaseActivity extends AppCompatActivity {
 
     ProgressBar mProgressBar;
     static Boolean adsEnabled;
+    static AdRequest mAdRequest;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
@@ -48,8 +50,12 @@ public class BaseActivity extends AppCompatActivity {
         if(areAdsEnabled()){
             AdView mAdView = findViewById(R.id.adView);
             if(mAdView != null){
-                AdRequest adRequest = new AdRequest.Builder().build();
-                mAdView.loadAd(adRequest);
+                if(BuildConfig.ADS){
+                    mAdView.setAdUnitId(getString(R.string.banner));
+                }
+                if(mAdRequest == null)
+                    mAdRequest = new AdRequest.Builder().build();
+                mAdView.loadAd(mAdRequest);
             }
         }
     }

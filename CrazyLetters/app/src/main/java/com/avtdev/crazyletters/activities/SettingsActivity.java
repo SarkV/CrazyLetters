@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.utils.Constants;
@@ -40,7 +41,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         setContentView(R.layout.activity_settings);
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
-        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+        mRewardedVideoAd.loadAd(BuildConfig.ADS ? getString(R.string.reward) : "ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
 
         swShowNotifications = findViewById(R.id.swShowNotifications);
         swAllowInvitations = findViewById(R.id.swAllowInvitations);
@@ -106,9 +107,9 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-    public void setRemoveAds() {
+    public void setRemoveAds(int time) {
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, Constants.NOT_SHOW_ADS_TIME);
+        cal.add(Calendar.SECOND, time);
         Utils.setSharedPreferences(this, Constants.Preferences.WITHOUT_ADS.name(), Utils.getUTCDate(cal.getTimeInMillis()));
         checkAds();
     }
@@ -147,7 +148,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void onRewarded(RewardItem reward) {
-        setRemoveAds();
+        setRemoveAds(reward.getAmount());
     }
 
     @Override

@@ -21,6 +21,7 @@ android {
             signingConfig signingConfigs.debug
             buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
             buildConfigField "boolean", "SYNCRO", "false"
+            buildConfigField "boolean", "ADS", "false"
         }
         debug {
             debuggable true
@@ -29,6 +30,7 @@ android {
             buildConfigField "boolean", "PRO", "false"
             buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
             buildConfigField "boolean", "SYNCRO", "false"
+            buildConfigField "boolean", "ADS", "false"
         }
         release {
             debuggable false
@@ -38,6 +40,7 @@ android {
             buildConfigField "boolean", "PRO", "true"
             buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
             buildConfigField "boolean", "SYNCRO", "true"
+            buildConfigField "boolean", "ADS", "true"
         }
     }
     compileOptions {

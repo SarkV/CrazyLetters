@@ -31,12 +31,13 @@
     <string name="game_save_message">The game configuration has been saved correctly</string>
     <string name="warning">Warning</string>
     <string name="error_title">Error</string>
-    <string name="error_login">There has been an error in the sign up. Try it again later!</string>
+    <string name="error_login">There has been an error in the sign up. Try it again later or continue without connection.</string>
     <string name="error_game_name">You have to set a game name to save it.</string>
     <string name="error_no_letter_type">You have to select at least one letter movement.</string>
     <string name="error_save_game">There has been an error while the game configuration was saving. Try it again!</string>
     <string name="error_create_game">There has been an error while the game was starting. Reconfigure the game and try it again!</string>
     <string name="accept">Accept</string>
+    <string name="without_connection">Without Connection</string>
     <string name="retry">Retry</string>
     <string name="exit">Exit</string>
 
@@ -119,4 +120,9 @@
     <string name="unexpected_status">Unexpected status: %1$s</string>
     <string name='match_error_locally_modified'>This match has locally-modified data.  This operation cannot be performed until the match is sent to the server.</string>
     <string name="score_label">%1$s - Me</string>
+
+    <string name="admob_id" translatable="false">ca-app-pub-4136978037886351~1365918375</string>
+    <string name="banner" translatable="false">ca-app-pub-4136978037886351/2881168267</string>
+    <string name="intersticial" translatable="false">ca-app-pub-4136978037886351/4082854705</string>
+    <string name="reward" translatable="false">ca-app-pub-4136978037886351/9498832916</string>
 </resources>

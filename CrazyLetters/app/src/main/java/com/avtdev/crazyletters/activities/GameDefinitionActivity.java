@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.models.realm.Game;
+import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.services.RealmManager;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.GameConstants;
@@ -74,6 +75,12 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
         findViewById(R.id.btnLoadGame).setOnClickListener(this);
         findViewById(R.id.btnSaveGame).setOnClickListener(this);
         findViewById(R.id.btnPlay).setOnClickListener(this);
+
+        if(GoogleService.getInstance(this).getPlayerId() != null){
+            findViewById(R.id.btnInvite).setOnClickListener(this);
+        }else{
+            findViewById(R.id.btnInvite).setEnabled(false);
+        }
 
         if(RealmManager.getInstance(this).getLanguages().size() > 2){
             findViewById(R.id.btnSelectLanguages).setOnClickListener(this);

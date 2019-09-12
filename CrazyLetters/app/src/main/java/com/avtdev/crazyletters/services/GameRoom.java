@@ -37,7 +37,7 @@ public class GameRoom {
         if(sInstance == null){
             sInstance = new GameRoom();
         }
-        sInstance.mRealm = RealmManager.getInstance(context).getRealm();
+        sInstance.mRealm = RealmManager.getInstance(context).getRealm(false);
         sInstance.mListener = (IGameRoom) context;
         return sInstance;
     }

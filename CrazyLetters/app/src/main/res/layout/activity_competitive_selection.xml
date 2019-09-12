@@ -11,11 +11,13 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="@color/colorSecondaryLight"
         android:text="@string/game_mode_selection"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:textSize="@dimen/competitive_title_size"
+        android:textColor="@color/colorSecondaryLight"
+        android:fontFamily="@font/storm"
         android:layout_alignParentTop="true"
         android:layout_marginStart="@dimen/competitive_btn_vertical_margin"
         android:layout_marginEnd="@dimen/competitive_btn_vertical_margin"
@@ -26,7 +28,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/title">
+        android:gravity="center"
+        android:layout_below="@id/title"
+        android:layout_above="@id/adView">
 
         <Button
             android:id="@+id/btnEasy"
@@ -48,17 +52,13 @@
             style="@style/ButtoCompetitive"
             android:text="@string/impossible"/>
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/btnBack"
+            style="@style/ButtoCompetitive"
+            android:drawableStart="@drawable/ic_back"
+            android:text="@string/back"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnBack"
-        style="@style/Button"
-        android:drawableStart="@drawable/ic_back"
-        android:text="@string/back"
-        android:layout_margin="@dimen/competitive_btn_vertical_margin"
-        android:layout_above="@id/adView"/>
+    </LinearLayout>
 
     <include
         android:id="@+id/adView"

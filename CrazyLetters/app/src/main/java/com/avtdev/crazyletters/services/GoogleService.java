@@ -29,6 +29,7 @@ import com.google.android.gms.games.PlayersClient;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -83,8 +84,7 @@ public class GoogleService {
     private void createGoogleSignClient(){
         GoogleSignInOptions  signInOptions =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-                        .requestEmail()
-                        .requestProfile()
+                        .requestId()
                         .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(mContext, signInOptions);
@@ -160,6 +160,7 @@ public class GoogleService {
             mSignedInAccount = googleSignInAccount;
 
             // update the clients
+            mPlayerId = mSignedInAccount.getId();
             mRealTimeMultiplayerClient = Games.getRealTimeMultiplayerClient(mContext, googleSignInAccount);
             mInvitationsClient = Games.getInvitationsClient(mContext, googleSignInAccount);
 
@@ -185,7 +186,6 @@ public class GoogleService {
         mSignedInAccount = null;
     }
 
-
     public void showLeaderboard() {
         Games.getLeaderboardsClient(mContext, GoogleSignIn.getLastSignedInAccount(mContext))
                 .getLeaderboardIntent(mContext.getString(R.string.leaderboard_easy_level))
@@ -197,25 +197,8 @@ public class GoogleService {
                 });
     }
 
-
-    public void startQuickGame(long role){
-        // auto-match criteria to invite one random automatch opponent.
-        // You can also specify more opponents (up to 3).
-        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, role);
-
-        // build the room config:
-     /*   mJoinedRoomConfig = RoomConfig.builder(mRoomUpdateCallback)
-                        .setOnMessageReceivedListener(mMessageReceivedHandler)
-                        .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler)
-                        .setAutoMatchCriteria(autoMatchCriteria)
-                        .build();*/
-
-        // prevent screen from sleeping during handshake
-        ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // create room:
-        Games.getRealTimeMultiplayerClient(mContext, GoogleSignIn.getLastSignedInAccount(mContext))
-                .create(mJoinedRoomConfig);
+    public String getPlayerId() {
+        return mPlayerId;
     }
 
 
@@ -276,5 +259,29 @@ public class GoogleService {
         listener.setSignInResult(Constants.SignInStatus.ERROR_PLAYER);
 
         ((BaseActivity) mContext).showOneBtnDialog(null, message + "\n" + errorString, android.R.string.ok, null);
+    }
+
+    public GoogleSignInAccount getSignedAccount() {
+        return mSignedInAccount;
+    }
+
+    public void startQuickGame(long gameType, RoomUpdateCallback roomUpdateCallback, ){
+        // auto-match criteria to invite one random automatch opponent.
+        // You can also specify more opponents (up to 3).
+        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, gameType);
+
+        // build the room config:
+      /*  mJoinedRoomConfig = RoomConfig.builder(roomUpdateCallback)
+                        .setOnMessageReceivedListener(mMessageReceivedHandler)
+                        .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler)
+                        .setAutoMatchCriteria(autoMatchCriteria)
+                        .build();*/
+
+        // prevent screen from sleeping during handshake
+        ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // create room:
+        Games.getRealTimeMultiplayerClient(mContext, mSignedInAccount)
+                .create(mJoinedRoomConfig);
     }
 }

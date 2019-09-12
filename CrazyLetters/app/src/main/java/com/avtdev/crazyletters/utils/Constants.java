@@ -40,5 +40,4 @@ public class Constants {
 
     public static final String ARRAY_SEPARATOR = ";";
     public static final int WORD_DELAY = 500;
-    public static final int NOT_SHOW_ADS_TIME = 7200; //seconds
 }

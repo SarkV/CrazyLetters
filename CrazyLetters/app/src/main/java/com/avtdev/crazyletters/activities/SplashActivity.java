@@ -15,6 +15,7 @@ import com.avtdev.crazyletters.listeners.ISplashProgressBar;
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
 import com.avtdev.crazyletters.models.response.GameModeResponse;
 import com.avtdev.crazyletters.services.ConstantGS;
+import com.avtdev.crazyletters.services.GetDictionaryAsyncTask;
 import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.services.RealmManager;
 import com.avtdev.crazyletters.utils.Constants;
@@ -67,7 +68,7 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
         mBuildSincro = Utils.getUTCDate(BuildConfig.LAST_BUILD);
         if(!BuildConfig.SYNCRO){
             if(mBuildSincro > lastSincroDictionary){
-                new Handler().postDelayed(() -> getOfflineDictionary( true), 1000);
+                new GetDictionaryAsyncTask(this,  mBuildSincro).execute();
             }else{
                 getDataDictionary(lastSincroDictionary);
             }
@@ -89,14 +90,19 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
     }
 
     public void setProgress() {
-        mProgressbar.setMax(mTotalProgress);
-        mProgressbar.setProgress(0);
-        mProgressbar.setProgress(mProgress);
-        mProgressBarText.setText(mProgress + " / " + mTotalProgress);
+        runOnUiThread(() -> {
+            mProgressbar.setMax(mTotalProgress);
+            if(mProgress > mTotalProgress){
+                mProgress = mTotalProgress;
+            }
+            mProgressbar.setProgress(mProgress);
+            mProgressBarText.setText(mProgress + " / " + mTotalProgress);
+        });
     }
 
-    private void setTotalProgress(long totalProgress){
-        mTotalProgress = Math.round(totalProgress / 100) + 3;
+    @Override
+    public void setTotalProgress(long totalProgress){
+        mTotalProgress = Math.round(totalProgress / 50)+ 3;
         setProgress();
     }
 
@@ -114,9 +120,6 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Logger.d(TAG, "dictionary_onDataChange", dataSnapshot.getChildrenCount());
 
-                mProgress = 0;
-                setTotalProgress(dataSnapshot.getChildrenCount());
-
                 try{
 
                     List<DictionaryResponse> listResponse = new ArrayList<>();
@@ -128,16 +131,12 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                         }
                     }
 
-                    RealmManager.getInstance(SplashActivity.this).setDictionary(listResponse, SplashActivity.this);
-
-                    Utils.setSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), currentTime);
+                    new GetDictionaryAsyncTask(SplashActivity.this, currentTime).execute(listResponse);
 
                 }catch (Exception e){
                     Logger.e(TAG, "dictionary_onDataChange", e.getMessage());
+                    login();
                 }
-
-                addProgress();
-                login();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -174,13 +173,9 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                         RealmManager.getInstance(SplashActivity.this).saveDefaultGames(listResponse);
 
                     Utils.setSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_GAME_MODES.name(), currentTime);
-
-                    addProgress();
                 }catch (Exception e){
                     Logger.e(TAG, "gameMode_onDataChange", e.getMessage());
                 }
-
-                addProgress();
                 login();
             }
             @Override
@@ -189,48 +184,6 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                 login();
             }
         });
-    }
-
-    private void getOfflineDictionary(boolean updateTime){
-        Logger.d(TAG, "getOfflineDictionary");
-        Gson gson = new Gson();
-        Long lastSincroDictionary = Utils.getLongSharedPreferences(SplashActivity.this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), 0L);
-
-        InputStream inputStream = null;
-        try{
-            inputStream = getResources().openRawResource(R.raw.total_words);
-
-            String jsonString = new Scanner(inputStream).useDelimiter("\\A").next();
-            DictionaryResponse[] listDictionaryResponse = gson.fromJson(jsonString, DictionaryResponse[].class);
-            List<DictionaryResponse> dictionaryList = new ArrayList<>();
-
-            for(DictionaryResponse dictionaryResponse : listDictionaryResponse){
-                if(dictionaryResponse.getCreatedAt() >= lastSincroDictionary){
-                    dictionaryList.add(dictionaryResponse);
-                }
-            }
-
-            if(dictionaryList.size() > 0){
-                setTotalProgress(dictionaryList.size());
-
-                RealmManager.getInstance(this).setDictionary(dictionaryList, SplashActivity.this);
-
-            }
-
-            if(updateTime){
-                Utils.setSharedPreferences(this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), mBuildSincro);
-            }
-        }catch (Exception ex){
-            Logger.e(TAG, "getOfflineDictionary", ex);
-        }finally {
-            try{
-                if(inputStream != null)
-                    inputStream.close();
-            }catch (Exception ex){}
-
-            addProgress();
-            login();
-        }
     }
 
     private void getOfflineGames(boolean updateTime){
@@ -248,7 +201,7 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
             RealmManager.getInstance(this).saveDefaultGames(gameModeList);
 
             if(updateTime){
-                Utils.setSharedPreferences(this, Constants.Preferences.LAST_SYNC_DICTIONARY.name(), mBuildSincro);
+                Utils.setSharedPreferences(this, Constants.Preferences.LAST_SYNC_GAME_MODES.name(), mBuildSincro);
             }
         }catch (Exception ex){
             Logger.e(TAG, "getOfflineGames", ex);
@@ -257,13 +210,13 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                 if(inputStream != null)
                     inputStream.close();
             }catch (Exception ex){}
-
-            addProgress();
             login();
         }
     }
 
-    private void login(){
+    @Override
+    public void login(){
+        addProgress();
         numberOfSync--;
         if(numberOfSync == 0){
             long countDictionary = RealmManager.getInstance(this).getDictionaryCount();
@@ -273,7 +226,7 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                     numberOfSync++;
                     mTotalProgress++;
                     setProgress();
-                    getOfflineDictionary(false);
+                    new GetDictionaryAsyncTask(this, null).execute();
                 }
                 if(countGames == 0){
                     numberOfSync++;
@@ -285,8 +238,7 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                 if(BuildConfig.GOOGLE_SERVICE) {
                     GoogleService.getInstance(this).signInSilently((Constants.SignInStatus status) -> {
                         if (status != null && status.equals(Constants.SignInStatus.OK)) {
-                            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                            finish();
+                            changeActivity();
                         } else {
                             GoogleService.getInstance(this).startSignInIntent();
                         }
@@ -297,6 +249,11 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                 }
             }
         }
+    }
+
+    private void changeActivity(){
+        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+        finish();
     }
 
     @Override
@@ -320,6 +277,7 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
     public void showRestartDialog(){
         showDialog(R.string.error_title, R.string.error_login,
                 R.string.retry, (dialog, which) -> GoogleService.getInstance(SplashActivity.this).startSignInIntent(),
-                R.string.exit, (dialog, which) -> System.exit(1), null, null);
+                R.string.without_connection, (dialog, which) -> changeActivity(),
+                R.string.exit, (dialog, which) -> System.exit(1));
     }
 }
