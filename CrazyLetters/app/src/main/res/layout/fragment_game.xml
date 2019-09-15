@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context=".activities.GameActivity">
+    tools:context=".fragments.GameFragment">
 
     <LinearLayout
         android:id="@+id/llScore"
@@ -115,14 +115,14 @@
             android:maxLines="1"/>
     </LinearLayout>
 
-    <com.avtdev.crazyletters.activities.GameCanvas
+    <com.avtdev.crazyletters.fragments.GameCanvas
         android:id="@+id/gameCanvas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/llLastWords"
         android:layout_above="@id/llWord"
         android:background="@color/colorPrimary">
-    </com.avtdev.crazyletters.activities.GameCanvas>
+    </com.avtdev.crazyletters.fragments.GameCanvas>
 
     <LinearLayout
         android:id="@+id/llWord"
@@ -130,7 +130,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/definition_inter_margin"
-        android:layout_above="@id/adView">
+        android:layout_alignParentBottom="true">
 
       <TextView
             android:id="@+id/tvCurrentWord"
@@ -160,11 +160,4 @@
             android:src="@drawable/ic_remove"
             android:tint="@color/colorSecondary"/>
     </LinearLayout>
-
-    <include
-        android:id="@+id/adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        layout="@layout/ad_view" />
 </RelativeLayout>

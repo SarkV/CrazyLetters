@@ -7,7 +7,7 @@
     android:background="@color/colorPrimaryLight"
     android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".activities.GameDefinitionActivity">
+    tools:context=".fragments.GameDefinitionFragment">
 
     <TextView
         android:id="@+id/title"

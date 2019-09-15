@@ -1,6 +1,5 @@
-package com.avtdev.crazyletters.activities;
+package com.avtdev.crazyletters.fragments;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -10,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.activities.BaseActivity;
 import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.services.GameFactory;
 import com.avtdev.crazyletters.services.GameRoom;
@@ -22,9 +22,9 @@ import com.avtdev.crazyletters.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameActivity extends BaseActivity implements View.OnClickListener, GameCanvas.IGameCanvas, GameRoom.IGameRoom {
+public class GameFragment extends BaseActivity implements View.OnClickListener, GameCanvas.IGameCanvas, GameRoom.IGameRoom {
 
-    private static final String TAG  = "GameActivity";
+    private static final String TAG  = "GameFragment";
 
     Game mGame;
     GameConstants.Mode mGameMode;
@@ -47,9 +47,7 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-
-        setBannerAd();
+        setContentView(R.layout.fragment_game);
 
         try{
             if(getIntent() != null && getIntent().getExtras() != null){
@@ -97,7 +95,7 @@ public class GameActivity extends BaseActivity implements View.OnClickListener, 
             new GameFactory(mGame, mGameCanvas, this);
 
         }catch (Exception ex){
-            Logger.e("GameActivity", "onCreate", ex);
+            Logger.e("GameFragment", "onCreate", ex);
             finish();
         }
     }

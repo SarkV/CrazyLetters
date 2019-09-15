@@ -1,14 +1,26 @@
-package com.avtdev.crazyletters.activities;
+package com.avtdev.crazyletters.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.activities.BaseActivity;
+import com.avtdev.crazyletters.activities.GameListActivity;
+import com.avtdev.crazyletters.activities.LanguageSelectionActivity;
+import com.avtdev.crazyletters.listeners.IGameDefinition;
+import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.services.RealmManager;
@@ -20,73 +32,94 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
-public class GameDefinitionActivity extends BaseActivity implements View.OnClickListener {
+public class GameDefinitionFragment extends Fragment implements View.OnClickListener {
 
-    private static String TAG = "GameDefinitionActivity";
+    private static String TAG = "GameDefinitionFragment";
     public final static int SELECT_LANGUAGE_CODE = 100;
     public final static int LOAD_GAME_CODE = 101;
 
-    Game mGame;
+    private IMain mListener;
 
-    EditText mGameName;
+    GameConstants.Mode mGameMode;
 
-    SeekBar mMinVelSB;
-    TextView mMinVelTV;
-    SeekBar mMaxVelSB;
-    TextView mMaxVelTV;
+    private Game mGame;
 
-    CheckBox mHorizMove;
-    CheckBox mVertMove;
-    CheckBox mDiagMove;
-    CheckBox mShowHide;
+    private EditText mGameName;
 
-    TextView mLanguagesTV;
-    String[] mLanguagesList;
+    private SeekBar mMinVelSB;
+    private TextView mMinVelTV;
+    private SeekBar mMaxVelSB;
+    private TextView mMaxVelTV;
 
-    CheckBox mAccent;
+    private CheckBox mHorizMove;
+    private CheckBox mVertMove;
+    private CheckBox mDiagMove;
+    private CheckBox mShowHide;
 
-    NumberPicker mTimePicker;
+    private TextView mLanguagesTV;
+    private String[] mLanguagesList;
+
+    private CheckBox mAccent;
+
+    private NumberPicker mTimePicker;
+
+    public static GameDefinitionFragment newInstance(IMain listener, GameConstants.Mode gameMode) {
+
+        Bundle args = new Bundle();
+
+        GameDefinitionFragment fragment = new GameDefinitionFragment();
+        fragment.setArguments(args);
+        fragment.mListener = listener;
+        fragment.mGameMode = gameMode;
+        return fragment;
+    }
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_game_definition, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_definition);
 
-        mGameName = findViewById(R.id.etName);
+        mGameName = view.findViewById(R.id.etName);
 
-        mMinVelSB = findViewById(R.id.sbMinVel);
-        mMinVelTV = findViewById(R.id.tvMinVel);
-        mMaxVelSB = findViewById(R.id.sbMaxVel);
-        mMaxVelTV = findViewById(R.id.tvMaxVel);
+        mMinVelSB = view.findViewById(R.id.sbMinVel);
+        mMinVelTV = view.findViewById(R.id.tvMinVel);
+        mMaxVelSB = view.findViewById(R.id.sbMaxVel);
+        mMaxVelTV = view.findViewById(R.id.tvMaxVel);
 
-        mHorizMove = findViewById(R.id.cbHorizMove);
-        mVertMove = findViewById(R.id.cbVertMove);
-        mDiagMove = findViewById(R.id.cbDiagMove);
-        mShowHide = findViewById(R.id.cbShowHide);
+        mHorizMove = view.findViewById(R.id.cbHorizMove);
+        mVertMove = view.findViewById(R.id.cbVertMove);
+        mDiagMove = view.findViewById(R.id.cbDiagMove);
+        mShowHide = view.findViewById(R.id.cbShowHide);
 
-        mLanguagesTV = findViewById(R.id.tvLanguages);
+        mLanguagesTV = view.findViewById(R.id.tvLanguages);
 
-        mAccent = findViewById(R.id.cbUseAccent);
+        mAccent = view.findViewById(R.id.cbUseAccent);
 
-        mTimePicker = findViewById(R.id.timePicker);
+        mTimePicker = view.findViewById(R.id.timePicker);
 
-        findViewById(R.id.btnLoadGame).setOnClickListener(this);
-        findViewById(R.id.btnSaveGame).setOnClickListener(this);
-        findViewById(R.id.btnPlay).setOnClickListener(this);
+        view.findViewById(R.id.btnLoadGame).setOnClickListener(this);
+        view.findViewById(R.id.btnSaveGame).setOnClickListener(this);
+        view.findViewById(R.id.btnPlay).setOnClickListener(this);
 
-        if(GoogleService.getInstance(this).getPlayerId() != null){
-            findViewById(R.id.btnInvite).setOnClickListener(this);
+        if(!mListener.isOffline()){
+            view.findViewById(R.id.btnInvite).setOnClickListener(this);
         }else{
-            findViewById(R.id.btnInvite).setEnabled(false);
+            view.findViewById(R.id.btnInvite).setEnabled(false);
         }
 
-        if(RealmManager.getInstance(this).getLanguages().size() > 2){
-            findViewById(R.id.btnSelectLanguages).setOnClickListener(this);
+        if(RealmManager.getInstance(getContext()).getLanguages().size() > 2){
+            view.findViewById(R.id.btnSelectLanguages).setOnClickListener(this);
             mLanguagesTV.setOnClickListener(this);
         }else{
-            findViewById(R.id.btnSelectLanguages).setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.btnSelectLanguages).setVisibility(View.INVISIBLE);
         }
 
         setLanguages(new String[0]);
@@ -238,13 +271,13 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        hideKeyboard();
+        mListener.hideKeyboard();
         if(v.getId() == R.id.btnLoadGame) {
-            Intent i = new Intent(this, GameListActivity.class);
+            Intent i = new Intent(getActivity(), GameListActivity.class);
             i.putExtra(Constants.Extras.GAME_MODIFIED.name(), hasModified());
             startActivityForResult(i, LOAD_GAME_CODE);
         }else if(v.getId() == R.id.btnSelectLanguages || v.getId() == mLanguagesTV.getId()) {
-            Intent i = new Intent(this, LanguageSelectionActivity.class);
+            Intent i = new Intent(getActivity(), LanguageSelectionActivity.class);
             i.putExtra(Constants.Extras.LANGUAGE_LIST.name(), mLanguagesTV.getText().toString());
             startActivityForResult(i, SELECT_LANGUAGE_CODE);
         }else{
@@ -264,14 +297,14 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
 
             if(lettersTypes.isEmpty()){
-                showOneBtnDialog(R.string.error_title,
+                mListener.showOneBtnDialog(R.string.error_title,
                         R.string.error_no_letter_type,
                         R.string.accept,
                         (dialog, which) -> {dialog.dismiss();});
 
             }else if(v.getId() == R.id.btnSaveGame){
                 if(!name.isEmpty() && (mGame == null || !name.equals(mGame.getName()))){
-                    mGame = RealmManager.getInstance(this).saveGame(
+                    mGame = RealmManager.getInstance(getContext()).saveGame(
                             name,
                             vel,
                             lettersTypes.toArray(new GameConstants.LettersType[0]),
@@ -284,34 +317,34 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                     mGame.setLanguages(mLanguagesList);
                     mGame.setTime(time);
 
-                    RealmManager.getInstance(this).updateGame(mGame, false);
+                    RealmManager.getInstance(getContext()).updateGame(mGame, false);
                 }else{
-                    showOneBtnDialog(R.string.error_title,
+                    mListener.showOneBtnDialog(R.string.error_title,
                             R.string.error_game_name,
                             R.string.accept,
                             (dialog, which) -> {dialog.dismiss();});
                 }
                 if(mGame == null){
-                    showOneBtnDialog(R.string.error_title,
+                    mListener.showOneBtnDialog(R.string.error_title,
                             R.string.error_save_game,
                             R.string.accept,
                             (dialog, which) -> {dialog.dismiss();});
                 }else{
-                    showOneBtnDialog(R.string.game_save_title,
+                    mListener.showOneBtnDialog(R.string.game_save_title,
                             R.string.game_save_message,
                             R.string.accept,
                             (dialog, which) -> {dialog.dismiss();});
                 }
             }else{
                 if(hasModified() && !Utils.isNull(mGameName.getText().toString())){
-                    showTwoBtnDialog(R.string.warning, R.string.warning_game_not_saved, R.string.accept,
+                    mListener.showTwoBtnDialog(R.string.warning, R.string.warning_game_not_saved, R.string.accept,
                             (dialog, which) -> {
-                                mGame = RealmManager.getInstance(this).updateGame(mGame, true);
+                                mGame = RealmManager.getInstance(getContext()).updateGame(mGame, true);
                                 runGame(v.getId());
                             },
                             R.string.cancel, (dialog, which) -> {
 
-                                mGame = RealmManager.getInstance(this).saveGame(
+                                mGame = RealmManager.getInstance(getContext()).saveGame(
                                         null,
                                         vel,
                                         lettersTypes.toArray(new GameConstants.LettersType[0]),
@@ -322,7 +355,7 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
                     });
                 }else if(Utils.isNull(mGameName.getText().toString())){
-                    mGame = RealmManager.getInstance(this).saveGame(
+                    mGame = RealmManager.getInstance(getContext()).saveGame(
                             null,
                             vel,
                             lettersTypes.toArray(new GameConstants.LettersType[0]),
@@ -331,7 +364,7 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
                             time, true);
                     runGame(v.getId());
                 }else{
-                    mGame = RealmManager.getInstance(this).updateGame(mGame, true);
+                    mGame = RealmManager.getInstance(getContext()).updateGame(mGame, true);
                     runGame(v.getId());
                 }
             }
@@ -340,28 +373,28 @@ public class GameDefinitionActivity extends BaseActivity implements View.OnClick
 
     private void runGame(long btnId){
         if(mGame == null){
-            showOneBtnDialog(R.string.error_title,
+            mListener.showOneBtnDialog(R.string.error_title,
                     R.string.error_create_game,
                     R.string.accept,
                     (dialog, which) -> {dialog.dismiss();});
         }else{
-            Intent intent = new Intent(this, GameActivity.class);
+           /* Intent intent = new Intent(this, GameFragment.class);
             intent.putExtra(Constants.Extras.GAME.name(), mGame.getId());
             intent.putExtra(Constants.Extras.GAME_MODE.name(), btnId == R.id.btnInvite ? GameConstants.Mode.INVITATION : GameConstants.Mode.SINGLE_PLAYER);
             startActivity(intent);
-            finish();
+            finish();*/
         }
     }
 
     @Override
-    protected void onActivityResult(int req, int res, Intent data) {
+    public void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
-        if(res == RESULT_OK){
+        if(res == Activity.RESULT_OK){
             if (req == LOAD_GAME_CODE) {
                 try {
                     if (data != null && data.getExtras() != null) {
                         Long gameId = data.getExtras().getLong(Constants.Extras.GAME.name());
-                        mGame = RealmManager.getInstance(this).getGame(gameId);
+                        mGame = RealmManager.getInstance(getContext()).getGame(gameId);
                         if (mGame != null) {
                             if(mGame.isDefaultGame())
                                 mGame.setName("");

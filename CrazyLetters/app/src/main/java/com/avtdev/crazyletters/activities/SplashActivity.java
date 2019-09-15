@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.fragments.MainFragment;
 import com.avtdev.crazyletters.listeners.ISplashProgressBar;
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
 import com.avtdev.crazyletters.models.response.GameModeResponse;
@@ -244,7 +245,7 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                         }
                     });
                 }else{
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                    startActivity(new Intent(SplashActivity.this, MainFragment.class));
                     finish();
                 }
             }
@@ -263,7 +264,7 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
         if (requestCode == ConstantGS.REQUEST_CODE.SIGN_IN && resultCode == RESULT_OK) {
             GoogleService.getInstance(this).checkSignIn(data, (Constants.SignInStatus status) -> {
                 if(status != null && status.equals(Constants.SignInStatus.OK)){
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                    startActivity(new Intent(SplashActivity.this, MainFragment.class));
                     finish();
                 }else{
                     showRestartDialog();

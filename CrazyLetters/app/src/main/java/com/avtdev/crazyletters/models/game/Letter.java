@@ -2,7 +2,7 @@ package com.avtdev.crazyletters.models.game;
 
 import android.graphics.Paint;
 
-import com.avtdev.crazyletters.activities.GameCanvas;
+import com.avtdev.crazyletters.fragments.GameCanvas;
 import com.avtdev.crazyletters.utils.GameConstants;
 import com.avtdev.crazyletters.utils.Utils;
 

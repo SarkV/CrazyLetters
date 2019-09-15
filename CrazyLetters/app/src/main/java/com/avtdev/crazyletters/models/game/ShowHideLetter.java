@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.graphics.Paint;
 
-import com.avtdev.crazyletters.activities.GameCanvas;
+import com.avtdev.crazyletters.fragments.GameCanvas;
 
 import java.util.List;
 

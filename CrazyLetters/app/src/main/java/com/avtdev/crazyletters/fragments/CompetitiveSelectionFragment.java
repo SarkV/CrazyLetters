@@ -1,50 +1,59 @@
-package com.avtdev.crazyletters.activities;
+package com.avtdev.crazyletters.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.avtdev.crazyletters.R;
-import com.avtdev.crazyletters.models.realm.Game;
-import com.avtdev.crazyletters.services.GoogleService;
-import com.avtdev.crazyletters.services.RealmManager;
-import com.avtdev.crazyletters.utils.Constants;
+import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.utils.GameConstants;
-import com.google.android.gms.games.Games;
 import com.google.android.gms.games.multiplayer.realtime.Room;
-import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
-import com.google.android.gms.tasks.OnSuccessListener;
 
-public class CompetitiveSelectionActivity extends BaseActivity implements View.OnClickListener{
+public class CompetitiveSelectionFragment extends Fragment implements View.OnClickListener{
 
-    GoogleService mGoogleService;
+    IMain mListener;
 
     private static final int WAITING_ROOM_CODE = 9007;
 
+    public static CompetitiveSelectionFragment newInstance(IMain listener) {
+
+        Bundle args = new Bundle();
+
+        CompetitiveSelectionFragment fragment = new CompetitiveSelectionFragment();
+        fragment.setArguments(args);
+        fragment.mListener = listener;
+        return fragment;
+    }
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_competitive_selection);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_competitive_selection, container, false);
+    }
 
-        setBannerAd();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        findViewById(R.id.btnEasy).setOnClickListener(this);
-        findViewById(R.id.btnMedium).setOnClickListener(this);
-        findViewById(R.id.btnDifficult).setOnClickListener(this);
-        findViewById(R.id.btnImpossible).setOnClickListener(this);
-        findViewById(R.id.btnBack).setOnClickListener(this);
-
-        mGoogleService = GoogleService.getInstance(this);
+        view.findViewById(R.id.btnEasy).setOnClickListener(this);
+        view.findViewById(R.id.btnMedium).setOnClickListener(this);
+        view.findViewById(R.id.btnDifficult).setOnClickListener(this);
+        view.findViewById(R.id.btnImpossible).setOnClickListener(this);
+        view.findViewById(R.id.btnBack).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnBack:
-                onBackPressed();
+                mListener.onBackPressed();
                 break;
             case R.id.btnEasy:
                 selectGameMode(GameConstants.Level.EASY);
@@ -63,7 +72,7 @@ public class CompetitiveSelectionActivity extends BaseActivity implements View.O
 
     private void selectGameMode(GameConstants.Level level){
 
-        mGoogleService.startQuickGame(level.getValue(), new RoomUpdateCallback() {
+       /* mGoogleService.startQuickGame(level.getValue(), new RoomUpdateCallback() {
             @Override
             public void onRoomCreated(int i, @Nullable Room room) {
             }
@@ -82,25 +91,20 @@ public class CompetitiveSelectionActivity extends BaseActivity implements View.O
             public void onRoomConnected(int i, @Nullable Room room) {
                 showWaitingRoom(room);
             }
-        });
+        });*/
     }
 
     private void showWaitingRoom(Room room) {
-        Games.getRealTimeMultiplayerClient(this, mGoogleService.getSignedAccount())
+       /* Games.getRealTimeMultiplayerClient(this, mGoogleService.getSignedAccount())
                 .getWaitingRoomIntent(room, 1)
-                .addOnSuccessListener(intent -> startActivityForResult(intent, WAITING_ROOM_CODE));
+                .addOnSuccessListener(intent -> startActivityForResult(intent, WAITING_ROOM_CODE));*/
     }
 
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(this, MainActivity.class));
-    }
-
-    @Override
+   /* @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == WAITING_ROOM_CODE) {
-/*
+
             // Look for finishing the waiting room from code, for example if a
             // "start game" message is received.  In this case, ignore the result.
             if (mWaitingRoomFinishedFromCode) {
@@ -125,7 +129,7 @@ public class CompetitiveSelectionActivity extends BaseActivity implements View.O
                 // continue to connect in the background.
 
                 // in this example, we take the simple approach and just leave the room:
-                Games.getRealTimeMultiplayerClient(CompetitiveSelectionActivity.this,
+                Games.getRealTimeMultiplayerClient(CompetitiveSelectionFragment.this,
                         mGoogleService.getSignedAccount())
                         .leave(mJoinedRoomConfig, mRoom.getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -135,7 +139,7 @@ public class CompetitiveSelectionActivity extends BaseActivity implements View.O
                         GoogleSignIn.getLastSignedInAccount(this))
                         .leave(mJoinedRoomConfig, mRoom.getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            }*/
+            }
         }
-    }
+    }*/
 }

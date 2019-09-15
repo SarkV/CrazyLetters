@@ -265,7 +265,7 @@ public class GoogleService {
         return mSignedInAccount;
     }
 
-    public void startQuickGame(long gameType, RoomUpdateCallback roomUpdateCallback, ){
+    public void startQuickGame(long gameType, RoomUpdateCallback roomUpdateCallback ){
         // auto-match criteria to invite one random automatch opponent.
         // You can also specify more opponents (up to 3).
         Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, gameType);

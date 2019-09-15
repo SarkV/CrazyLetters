@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.activities.BaseActivity;
 
 public class ListBaseActivity extends BaseActivity {
 

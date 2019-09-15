@@ -2,7 +2,7 @@ package com.avtdev.crazyletters.models.game;
 
 import android.animation.ValueAnimator;
 
-import com.avtdev.crazyletters.activities.GameCanvas;
+import com.avtdev.crazyletters.fragments.GameCanvas;
 
 import java.util.List;
 

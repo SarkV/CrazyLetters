@@ -3,7 +3,7 @@ package com.avtdev.crazyletters.services;
 import android.content.Context;
 import android.os.Handler;
 
-import com.avtdev.crazyletters.activities.GameCanvas;
+import com.avtdev.crazyletters.fragments.GameCanvas;
 import com.avtdev.crazyletters.models.game.DiagonalLetter;
 import com.avtdev.crazyletters.models.game.HorizontalLetter;
 import com.avtdev.crazyletters.models.game.ShowHideLetter;

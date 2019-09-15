@@ -1,91 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/colorPrimaryLight"
     tools:context=".activities.MainActivity">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name_main"
-        android:gravity="center"
-        android:textSize="100dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:textColor="@color/colorSecondaryLight"
-        android:fontFamily="@font/storm"/>
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:layout_below="@id/tvTitle">
+        android:layout_above="@id/adView"
+        android:background="@color/colorPrimaryLight"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/btnSinglePlayer"
-                style="@style/MenuButton"
-                android:drawableStart="@drawable/ic_singleplayer"
-                android:padding="16dp"
-                android:text="@string/single_player"/>
 
-            <Button
-                android:id="@+id/btnMultiplayer"
-                style="@style/MenuButton"
-                android:drawableStart="@drawable/ic_multiplayer"
-                android:text="@string/multiplayer"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/btnSeeInvitations"
-                style="@style/MenuButton"
-                android:drawableStart="@drawable/ic_invite"
-                android:text="@string/invitations"/>
-            <Button
-                android:id="@+id/btnLeaderboard"
-                style="@style/MenuButton"
-                android:drawableStart="@drawable/ic_leaderboard"
-                android:text="@string/leaderboard"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnSettings"
-                style="@style/MenuButton"
-                android:drawableStart="@drawable/ic_settings"
-                android:text="@string/settings"/>
-
-            <Button
-                android:id="@+id/btnExit"
-                style="@style/MenuButton"
-                android:drawableStart="@drawable/ic_power"
-                android:text="@string/exit"/>
-        </LinearLayout>
-
-    </LinearLayout>
-    <include
+    <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        layout="@layout/ad_view" />
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+
+        <!--ads:adUnitId="ca-app-pub-4136978037886351/2881168267"-->
+    </com.google.android.gms.ads.AdView>
 
 </RelativeLayout>

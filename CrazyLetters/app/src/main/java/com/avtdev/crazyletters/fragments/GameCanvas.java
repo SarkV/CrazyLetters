@@ -1,4 +1,4 @@
-package com.avtdev.crazyletters.activities;
+package com.avtdev.crazyletters.fragments;
 
 import android.animation.Animator;
 import android.content.Context;

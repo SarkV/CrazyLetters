@@ -7,7 +7,7 @@
     android:padding="@dimen/settings_pading"
     android:background="@color/colorPrimary"
     android:clipToPadding="false"
-    tools:context=".activities.SettingsActivity">
+    tools:context=".fragments.SettingsFragment">
 
     <TextView
         android:id="@+id/tvSettings"
@@ -108,7 +108,7 @@
         android:id="@+id/llBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/adView"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal">
         <Button
             android:id="@+id/btnCancel"
@@ -120,15 +120,4 @@
             android:text="@string/save"/>
 
     </LinearLayout>
-
-    <include
-        android:id="@+id/adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/negate_settings_pading"
-        android:layout_marginEnd="@dimen/negate_settings_pading"
-        android:layout_marginBottom="@dimen/negate_settings_pading"
-        layout="@layout/ad_view" />
-
 </RelativeLayout>

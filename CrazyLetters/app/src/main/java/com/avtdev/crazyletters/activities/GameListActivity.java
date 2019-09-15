@@ -1,15 +1,8 @@
 package com.avtdev.crazyletters.activities;
 
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
 
-import androidx.core.app.NavUtils;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +14,7 @@ import com.avtdev.crazyletters.utils.Constants;
 
 import java.util.List;
 
-public class GameListActivity extends ListBaseActivity{
+public class GameListActivity extends ListBaseActivity {
 
     RecyclerView mRecyclerView;
 

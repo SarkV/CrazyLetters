@@ -1,9 +1,7 @@
 package com.avtdev.crazyletters.services;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
-import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.activities.SplashActivity;
 import com.avtdev.crazyletters.listeners.ISplashProgressBar;

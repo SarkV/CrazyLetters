@@ -10,14 +10,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.CompetitiveSelectionActivity" />
+        <activity android:name=".activities.MainActivity"></activity>
+        <activity android:name=".fragments.CompetitiveSelectionFragment" />
         <activity android:name=".activities.LanguageSelectionActivity" />
         <activity android:name=".activities.ListBaseActivity" />
         <activity android:name=".activities.GameListActivity" />
-        <activity android:name=".activities.GameDefinitionActivity" />
-        <activity android:name=".activities.GameActivity" />
-        <activity android:name=".activities.SettingsActivity" />
-        <activity android:name=".activities.MainActivity" />
+        <activity android:name=".fragments.GameDefinitionFragment" />
+        <activity android:name=".fragments.GameFragment" />
+        <activity android:name=".fragments.SettingsFragment" />
+        <activity android:name=".fragments.MainFragment" />
         <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
