@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.listeners.ISettings;
 import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.utils.GameConstants;
+import com.avtdev.crazyletters.utils.Utils;
 import com.google.android.gms.games.Games;
 
 public class MainFragment extends Fragment implements View.OnClickListener{
@@ -23,6 +25,8 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     private IMain mListener;
 
     public final static int SHOW_INVITATION_CODE = 9008;
+
+    Button btnMultiplayer, btnSeeInvitations, btnLeaderboard;
 
     public static MainFragment newInstance(IMain listener) {
 
@@ -47,17 +51,26 @@ public class MainFragment extends Fragment implements View.OnClickListener{
         super.onViewCreated(view, savedInstanceState);
 
         view.findViewById(R.id.btnSinglePlayer).setOnClickListener(this);
-        if(!mListener.isOffline()){
-            view.findViewById(R.id.btnMultiplayer).setOnClickListener(this);
-            view.findViewById(R.id.btnSeeInvitations).setOnClickListener(this);
-            view.findViewById(R.id.btnLeaderboard).setOnClickListener(this);
-        }else{
-            view.findViewById(R.id.btnMultiplayer).setEnabled(false);
-            view.findViewById(R.id.btnSeeInvitations).setEnabled(false);
-            view.findViewById(R.id.btnLeaderboard).setEnabled(false);
-        }
+        btnMultiplayer = view.findViewById(R.id.btnMultiplayer);
+        btnSeeInvitations = view.findViewById(R.id.btnSeeInvitations);
+        btnLeaderboard = view.findViewById(R.id.btnLeaderboard);
         view.findViewById(R.id.btnSettings).setOnClickListener(this);
         view.findViewById(R.id.btnExit).setOnClickListener(this);
+
+        checkButtons();
+    }
+
+    public void checkButtons(){
+        if(!mListener.isOffline()){
+            mListener.setEnabled(btnMultiplayer, this);
+            mListener.setEnabled(btnSeeInvitations, this);
+            mListener.setEnabled(btnLeaderboard, this);
+        }else{
+            mListener.setDisabled(btnMultiplayer);
+            mListener.setDisabled(btnSeeInvitations);
+            mListener.setDisabled(btnLeaderboard);
+        }
+
     }
 
     @Override

@@ -3,7 +3,10 @@ package com.avtdev.crazyletters.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,7 +14,6 @@ import androidx.annotation.Nullable;
 
 import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
-import com.avtdev.crazyletters.fragments.MainFragment;
 import com.avtdev.crazyletters.listeners.ISplashProgressBar;
 import com.avtdev.crazyletters.models.response.DictionaryResponse;
 import com.avtdev.crazyletters.models.response.GameModeResponse;
@@ -43,6 +45,8 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
     TextView mProgressBarText;
     ProgressBar mProgressbar;
 
+    Button mSignInButton;
+
     int mProgress = 0;
     int mTotalProgress = 4;
 
@@ -53,9 +57,10 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-
         mProgressbar = findViewById(R.id.progressBar);
         mProgressBarText = findViewById(R.id.progressBarText);
+        mSignInButton = findViewById(R.id.btnSignIn);
+        mSignInButton.setVisibility(View.GONE);
 
         mProgressbar.setMax(mTotalProgress);
 
@@ -236,49 +241,28 @@ public class SplashActivity extends BaseActivity implements ISplashProgressBar {
                     getOfflineGames(false);
                 }
             }else{
-                if(BuildConfig.GOOGLE_SERVICE) {
+                if(!Utils.getBooleanSharedPreferences(this, Constants.Preferences.SIGN_IN_REFUSED.name(), false)) {
                     GoogleService.getInstance(this).signInSilently((Constants.SignInStatus status) -> {
                         if (status != null && status.equals(Constants.SignInStatus.OK)) {
-                            changeActivity();
+                            changeActivity(false);
                         } else {
-                            GoogleService.getInstance(this).startSignInIntent();
+                            // TODO poner disable los botones
+                            mSignInButton.setVisibility(View.VISIBLE);
+                            mSignInButton.setOnClickListener(v -> signIn());
+                            findViewById(R.id.rlProgressBar).setVisibility(View.GONE);
+                            findViewById(R.id.tvLoading).setVisibility(View.GONE);
                         }
                     });
                 }else{
-                    startActivity(new Intent(SplashActivity.this, MainFragment.class));
-                    finish();
+                    changeActivity(true);
                 }
             }
         }
     }
 
-    private void changeActivity(){
+    public void changeActivity(boolean notSignIn){
+        Utils.setSharedPreferences(this, Constants.Preferences.SIGN_IN_REFUSED.name(), notSignIn);
         startActivity(new Intent(SplashActivity.this, MainActivity.class));
         finish();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ConstantGS.REQUEST_CODE.SIGN_IN && resultCode == RESULT_OK) {
-            GoogleService.getInstance(this).checkSignIn(data, (Constants.SignInStatus status) -> {
-                if(status != null && status.equals(Constants.SignInStatus.OK)){
-                    startActivity(new Intent(SplashActivity.this, MainFragment.class));
-                    finish();
-                }else{
-                    showRestartDialog();
-                }
-            });
-        }else{
-            showRestartDialog();
-        }
-    }
-
-    public void showRestartDialog(){
-        showDialog(R.string.error_title, R.string.error_login,
-                R.string.retry, (dialog, which) -> GoogleService.getInstance(SplashActivity.this).startSignInIntent(),
-                R.string.without_connection, (dialog, which) -> changeActivity(),
-                R.string.exit, (dialog, which) -> System.exit(1));
     }
 }

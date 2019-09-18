@@ -7,11 +7,16 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.fragments.GameDefinitionFragment;
+import com.avtdev.crazyletters.fragments.GameFragment;
 import com.avtdev.crazyletters.fragments.MainFragment;
+import com.avtdev.crazyletters.fragments.SettingsFragment;
+import com.avtdev.crazyletters.listeners.IGame;
 import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.listeners.ISettings;
 import com.avtdev.crazyletters.services.GoogleService;
@@ -23,12 +28,12 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.tasks.Task;
 
-public class MainActivity extends BaseActivity implements ISettings, IMain {
+public class MainActivity extends BaseActivity implements ISettings, IMain, IGame {
 
     Boolean adsEnabled;
     AdRequest mAdRequest;
     FragmentManager mFragmentManager;
-    AdView mAdView = findViewById(R.id.adView);
+    AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +52,20 @@ public class MainActivity extends BaseActivity implements ISettings, IMain {
         }
     }
 
-    private boolean areAdsEnabled(){
+    public boolean areAdsEnabled(){
         long withoutAds = Utils.getLongSharedPreferences(this, Constants.Preferences.WITHOUT_ADS.name(), 0L);
-        return Utils.getUTCDate() >= withoutAds;
+        if(withoutAds == 0L){
+            return true;
+        }else{
+            if(Utils.getUTCDate() >= withoutAds){
+                Utils.removeSharedPreferences(this, Constants.Preferences.WITHOUT_ADS.name());
+                return true;
+            }
+            return false;
+        }
     }
 
-    private void setBannerAd(){
+    public void setBannerAd(){
         if(areAdsEnabled()){
             if(BuildConfig.ADS){
                 mAdView.setAdUnitId(getString(R.string.banner));
@@ -68,13 +81,13 @@ public class MainActivity extends BaseActivity implements ISettings, IMain {
     }
 
     public boolean isOffline(){
-        return false;
+        return Utils.getBooleanSharedPreferences(this, Constants.Preferences.SIGN_IN_REFUSED.name(), false);
     }
 
     public void changeFragment(Fragment fragment, boolean override){
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
         if(override){
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
+            fragmentTransaction.replace(R.id.fragment_container, fragment, fragment.getClass().getName());
         }else{
             fragmentTransaction.add(R.id.fragment_container, fragment, fragment.getClass().getName());
             fragmentTransaction.addToBackStack(fragment.getClass().getName());
@@ -90,6 +103,7 @@ public class MainActivity extends BaseActivity implements ISettings, IMain {
 
     public void logout(){
         GoogleService.getInstance(this).signOut((@NonNull Task task) -> {
+            Utils.removeSharedPreferences(this, Constants.Preferences.SIGN_IN_REFUSED.name());
             startActivity(new Intent(MainActivity.this, SplashActivity.class));
             finish();
         });
@@ -97,29 +111,75 @@ public class MainActivity extends BaseActivity implements ISettings, IMain {
 
     public void hideKeyboard(){
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        if(inputMethodManager != null && getCurrentFocus() != null)
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
+
+    @Override
+    public void setEnabled(View view, View.OnClickListener listener) {
+        view.setAlpha(1);
+        view.setOnClickListener(listener);
+    }
+
+    @Override
+    public void setDisabled(View view) {
+        view.setAlpha(.5f);
+        view.setOnClickListener(v -> signIn());
+    }
+
+    public void reconnect(){
+        Fragment f = mFragmentManager.getFragments().get(mFragmentManager.getFragments().size() - 1);
+        if (MainFragment.class.getName().equals(f.getTag())){
+            ((MainFragment) f).checkButtons();
+        }else if (SettingsFragment.class.getName().equals(f.getTag())){
+            ((SettingsFragment) f).checkOffline();
+        }else if (GameDefinitionFragment.class.getName().equals(f.getTag())){
+            ((GameDefinitionFragment) f).checkOffline();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (mFragmentManager.getBackStackEntryCount() > 0) {
-            mFragmentManager.popBackStack();
-        } else {
-            showTwoBtnDialog(R.string.warning,
-                    R.string.warning_exit,
-                    R.string.exit,
-                    (dialog, which) -> finish(),
-                    R.string.cancel,
-                    (dialog, which) -> dialog.cancel());
+        if(mFragmentManager.getFragments().get(0).getTag().equals(GameFragment.class.getName())){
+            ((GameFragment) mFragmentManager.getFragments().get(0)).onBackPressed();
+        }else{
+            if (mFragmentManager.getBackStackEntryCount() > 0) {
+                mFragmentManager.popBackStack();
+            } else {
+                showTwoBtnDialog(R.string.warning,
+                        R.string.warning_exit,
+                        R.string.exit,
+                        (dialog, which) -> finish(),
+                        R.string.cancel,
+                        (dialog, which) -> dialog.cancel());
+            }
         }
     }
 
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
 
-        if (res == GamesActivityResultCodes.RESULT_RECONNECT_REQUIRED) {
-            startActivity(new Intent(MainActivity.this, SplashActivity.class));
-            finish();
+        switch (res){
+            case GamesActivityResultCodes.RESULT_RECONNECT_REQUIRED:
+                startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                finish();
+                break;
+            case GamesActivityResultCodes.RESULT_LEFT_ROOM:
+                leftRoom();
+                break;
         }
     }
+
+    @Override
+    protected void onStop() {
+        leftRoom();
+        super.onStop();
+    }
+
+    private void leftRoom(){
+
+    }
+
+    // Google Play Games
+
 }

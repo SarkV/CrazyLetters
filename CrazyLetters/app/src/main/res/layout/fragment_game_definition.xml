@@ -18,8 +18,9 @@
         android:gravity="center"
         android:textSize="35sp"
         android:textStyle="bold"
-        android:textColor="@color/colorSecondary"
-        android:text="@string/title_game_config"/>
+        android:textColor="@color/colorSecondaryLight"
+        android:text="@string/title_game_config"
+        android:fontFamily="@font/storm"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -144,14 +145,87 @@
                 android:textStyle="bold"
                 android:textSize="@dimen/definition_text_size"/>
         </LinearLayout>
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/letter_type"
-            android:textColor="@color/colorSecondaryLight"
-            android:textSize="@dimen/definition_text_size"
-            android:textStyle="bold"
-            android:layout_marginBottom="@dimen/definition_inter_margin"/>
+            android:layout_marginBottom="@dimen/definition_inter_margin">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:text="@string/letter_type"
+                android:textColor="@color/colorSecondaryLight"
+                android:textSize="@dimen/definition_text_size"
+                android:textStyle="bold"/>
+            <TableLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6">
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/horizontal_arrow"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:textSize="@dimen/definition_text_size"
+                        android:layout_marginEnd="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/vertical_arrow"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:textSize="@dimen/definition_text_size"
+                        android:layout_marginEnd="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/diagonal_arrow"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:textSize="@dimen/definition_text_size"
+                        android:layout_marginEnd="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/show_hide"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:textSize="@dimen/definition_text_size"
+                        android:layout_marginEnd="10dp"/>
+                </TableRow>
+                <TableRow>
+                    <CheckBox
+                        android:id="@+id/cbHorizMove"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/colorSecondaryLight"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:layout_marginEnd="10dp"/>
+                    <CheckBox
+                        android:id="@+id/cbVertMove"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/colorSecondaryLight"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:layout_marginEnd="10dp"/>
+                    <CheckBox
+                        android:id="@+id/cbDiagMove"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/colorSecondaryLight"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:layout_marginEnd="10dp"/>
+                    <CheckBox
+                        android:id="@+id/cbShowHide"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/colorSecondaryLight"
+                        android:textColor="@color/colorSecondaryLight"
+                        android:layout_marginEnd="10dp"/>
+                </TableRow>
+
+            </TableLayout>
+
+        </LinearLayout>
+        <!--
         <CheckBox
             android:id="@+id/cbHorizMove"
             android:layout_width="match_parent"
@@ -187,7 +261,7 @@
             android:buttonTint="@color/colorSecondaryLight"
             android:textColor="@color/colorSecondaryLight"
             android:layout_marginEnd="10dp"
-            android:textSize="@dimen/definition_text_size"/>
+            android:textSize="@dimen/definition_text_size"/>-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

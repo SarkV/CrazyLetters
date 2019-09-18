@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -19,6 +20,7 @@ import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.activities.BaseActivity;
 import com.avtdev.crazyletters.activities.GameListActivity;
 import com.avtdev.crazyletters.activities.LanguageSelectionActivity;
+import com.avtdev.crazyletters.listeners.IGame;
 import com.avtdev.crazyletters.listeners.IGameDefinition;
 import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.models.realm.Game;
@@ -46,6 +48,8 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
     private Game mGame;
 
     private EditText mGameName;
+
+    private Button mInvite;
 
     private SeekBar mMinVelSB;
     private TextView mMinVelTV;
@@ -109,11 +113,9 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
         view.findViewById(R.id.btnSaveGame).setOnClickListener(this);
         view.findViewById(R.id.btnPlay).setOnClickListener(this);
 
-        if(!mListener.isOffline()){
-            view.findViewById(R.id.btnInvite).setOnClickListener(this);
-        }else{
-            view.findViewById(R.id.btnInvite).setEnabled(false);
-        }
+        mInvite = view.findViewById(R.id.btnInvite);
+
+        checkOffline();
 
         if(RealmManager.getInstance(getContext()).getLanguages().size() > 2){
             view.findViewById(R.id.btnSelectLanguages).setOnClickListener(this);
@@ -127,6 +129,14 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
         initializeVelocity();
 
         initializeTimePicker();
+    }
+
+    public void checkOffline(){
+        if(!mListener.isOffline()){
+            mListener.setEnabled(mInvite, this);
+        }else{
+            mListener.setDisabled(mInvite);
+        }
     }
 
     private void initializeTimePicker(){
@@ -158,14 +168,10 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
         mMaxVelSB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -179,14 +185,10 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
         int max = 6;
@@ -344,24 +346,26 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
                             },
                             R.string.cancel, (dialog, which) -> {
 
-                                mGame = RealmManager.getInstance(getContext()).saveGame(
-                                        null,
+                                mGame = new Game(null,
                                         vel,
                                         lettersTypes.toArray(new GameConstants.LettersType[0]),
                                         mLanguagesList,
                                         !mAccent.isChecked(),
-                                        time, true);
+                                        time,
+                                        false);
+
                                 runGame(v.getId());
 
                     });
                 }else if(Utils.isNull(mGameName.getText().toString())){
-                    mGame = RealmManager.getInstance(getContext()).saveGame(
-                            null,
+
+                    mGame = new Game(null,
                             vel,
                             lettersTypes.toArray(new GameConstants.LettersType[0]),
                             mLanguagesList,
                             !mAccent.isChecked(),
-                            time, true);
+                            time,
+                            false);
                     runGame(v.getId());
                 }else{
                     mGame = RealmManager.getInstance(getContext()).updateGame(mGame, true);
@@ -378,11 +382,12 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
                     R.string.accept,
                     (dialog, which) -> {dialog.dismiss();});
         }else{
-           /* Intent intent = new Intent(this, GameFragment.class);
-            intent.putExtra(Constants.Extras.GAME.name(), mGame.getId());
-            intent.putExtra(Constants.Extras.GAME_MODE.name(), btnId == R.id.btnInvite ? GameConstants.Mode.INVITATION : GameConstants.Mode.SINGLE_PLAYER);
-            startActivity(intent);
-            finish();*/
+            GameFragment gameFragment = GameFragment.newInstance((IGame) mListener,
+                    mGame,
+                    btnId == R.id.btnInvite ? GameConstants.Mode.INVITATION : GameConstants.Mode.SINGLE_PLAYER);
+            mListener.changeFragment(gameFragment, true);
+
+
         }
     }
 

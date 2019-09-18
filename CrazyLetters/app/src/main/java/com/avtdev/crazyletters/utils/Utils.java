@@ -89,6 +89,18 @@ public class Utils {
         }
     }
 
+    public static void removeSharedPreferences(Context context, String key){
+        try{
+            SharedPreferences.Editor sharedPreferences = context.getSharedPreferences(Constants.Preferences.NAME.name(),
+                    Context.MODE_PRIVATE).edit();
+            sharedPreferences.remove(key);
+            sharedPreferences.apply();
+        }catch (Exception ex){
+            Logger.e(TAG,"removeSharedPreferences", ex);
+        }
+
+    }
+
     public static String getStringSharedPreferences(Context context, String key, @NonNull String defaultValue){
         String value = defaultValue;
         try{

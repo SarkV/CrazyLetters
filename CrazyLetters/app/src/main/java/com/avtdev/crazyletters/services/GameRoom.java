@@ -33,12 +33,12 @@ public class GameRoom {
         mPlayersId = new ArrayList<>();
     }
 
-    public static GameRoom getInstance(Context context){
+    public static GameRoom getInstance(Context context, IGameRoom listener){
         if(sInstance == null){
             sInstance = new GameRoom();
         }
         sInstance.mRealm = RealmManager.getInstance(context).getRealm(false);
-        sInstance.mListener = (IGameRoom) context;
+        sInstance.mListener = listener;
         return sInstance;
     }
 

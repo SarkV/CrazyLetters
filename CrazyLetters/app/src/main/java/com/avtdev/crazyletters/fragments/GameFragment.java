@@ -4,12 +4,20 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.activities.BaseActivity;
+import com.avtdev.crazyletters.listeners.IGame;
+import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.models.realm.Game;
 import com.avtdev.crazyletters.services.GameFactory;
 import com.avtdev.crazyletters.services.GameRoom;
@@ -22,9 +30,11 @@ import com.avtdev.crazyletters.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameFragment extends BaseActivity implements View.OnClickListener, GameCanvas.IGameCanvas, GameRoom.IGameRoom {
+public class GameFragment extends Fragment implements View.OnClickListener, GameCanvas.IGameCanvas, GameRoom.IGameRoom {
 
     private static final String TAG  = "GameFragment";
+
+    IGame mListener;
 
     Game mGame;
     GameConstants.Mode mGameMode;
@@ -44,59 +54,73 @@ public class GameFragment extends BaseActivity implements View.OnClickListener, 
     int mMaxWordLength;
     boolean mSoundEnabled;
 
+    public static GameFragment newInstance(IGame listener, Game game, GameConstants.Mode gameMode) {
+
+        Bundle args = new Bundle();
+
+        GameFragment fragment = new GameFragment();
+        fragment.setArguments(args);
+        fragment.mListener = listener;
+        fragment.mGame = game;
+        fragment.mGameMode = gameMode;
+        return fragment;
+    }
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_game, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_game);
 
         try{
-            if(getIntent() != null && getIntent().getExtras() != null){
-                long id = getIntent().getExtras().getLong(Constants.Extras.GAME.name());
-                mGame = RealmManager.getInstance(this).getGame(id);
-                mGameMode = GameConstants.Mode.valueOf(getIntent().getExtras().getString(Constants.Extras.GAME_MODE.name(), GameConstants.Mode.SINGLE_PLAYER.name()));
-            }
             if(mGameMode == null){
                 mGameMode = GameConstants.Mode.SINGLE_PLAYER;
             }
             if(mGame == null){
-                mGame = RealmManager.getInstance(this).getLastGame();
+                mGame = RealmManager.getInstance(getContext()).getLastGame();
             }
             if(mGame == null){
-                finish();
+                mListener.changeFragment(MainFragment.newInstance(mListener), true);
             }
 
-            mGameCanvas = findViewById(R.id.gameCanvas);
+            mGameCanvas = view.findViewById(R.id.gameCanvas);
             mGameCanvas.setListener(this);
 
-            mTime = findViewById(R.id.tvTime);
-            mCurrentWord = findViewById(R.id.tvCurrentWord);
+            mTime = view.findViewById(R.id.tvTime);
+            mCurrentWord = view.findViewById(R.id.tvCurrentWord);
 
-            mPlayerPuntuationPB = findViewById(R.id.pbPlayerPuntuation);
-            mPlayerPuntuationTv = findViewById(R.id.tvPlayerPuntuation);
-            mBestPuntuationPB = findViewById(R.id.pbBestContraryPuntuation);
-            mBestPuntuationTv = findViewById(R.id.tvBestContraryPuntuation);
+            mPlayerPuntuationPB = view.findViewById(R.id.pbPlayerPuntuation);
+            mPlayerPuntuationTv = view.findViewById(R.id.tvPlayerPuntuation);
+            mBestPuntuationPB = view.findViewById(R.id.pbBestContraryPuntuation);
+            mBestPuntuationTv = view.findViewById(R.id.tvBestContraryPuntuation);
 
-            mLastWordPlayer = findViewById(R.id.tvLastWordPlayer);
-            mLastWord = findViewById(R.id.tvLastWord);
+            mLastWordPlayer = view.findViewById(R.id.tvLastWordPlayer);
+            mLastWord = view.findViewById(R.id.tvLastWord);
 
-            findViewById(R.id.ivRemove).setOnClickListener(this);
-            findViewById(R.id.ivSend).setOnClickListener(this);
+            view.findViewById(R.id.ivRemove).setOnClickListener(this);
+            view.findViewById(R.id.ivSend).setOnClickListener(this);
 
-            mGameRoom = GameRoom.getInstance(this);
+            mGameRoom = GameRoom.getInstance(getContext(), this);
             List<String> playersId = new ArrayList<>();
             playersId.add("1");
             mGameRoom.setPlayersId(playersId);
-            mMaxWordLength = RealmManager.getInstance(this).getDictionaryMax(mGame.getLanguagesString());
+            mMaxWordLength = RealmManager.getInstance(getContext()).getDictionaryMax(mGame.getLanguagesString());
             mGameRoom.setSearchVariables(mGame.getLanguagesString(), mGame.hasAccent());
 
             initializeTime();
             initializeText();
 
-            new GameFactory(mGame, mGameCanvas, this);
+            new GameFactory(mGame, mGameCanvas, getContext());
 
         }catch (Exception ex){
-            Logger.e("GameFragment", "onCreate", ex);
-            finish();
+            Logger.e("GameFragment", "onViewCreated", ex);
+            mListener.changeFragment(MainFragment.newInstance(mListener), true);
         }
     }
 
@@ -109,7 +133,7 @@ public class GameFragment extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCurrentWord.setTextColor(getColor(R.color.colorSecondaryLight));
+                mCurrentWord.setTextColor(getContext().getColor(R.color.colorSecondaryLight));
             }
 
             @Override
@@ -121,7 +145,7 @@ public class GameFragment extends BaseActivity implements View.OnClickListener, 
 
     private void initializeTime(){
         if(mGame.getTime() > 0){
-            mSoundEnabled = Utils.getBooleanSharedPreferences(this, Constants.Preferences.ENABLE_SOUND.name(), true);
+            mSoundEnabled = Utils.getBooleanSharedPreferences(getContext(), Constants.Preferences.ENABLE_SOUND.name(), true);
 
             new CountDownTimer(mGame.getTime() * 60000, 1000){
                 public void onTick(long millisUntilFinished) {
@@ -167,10 +191,10 @@ public class GameFragment extends BaseActivity implements View.OnClickListener, 
                         mCurrentWord.setText("");
                         break;
                     case ALREADY_DONE:
-                        mCurrentWord.setTextColor(getColor(R.color.blue));
+                        mCurrentWord.setTextColor(getContext().getColor(R.color.blue));
                         break;
                     case NOT_EXIST:
-                        mCurrentWord.setTextColor(getColor(R.color.red));
+                        mCurrentWord.setTextColor(getContext().getColor(R.color.red));
                         break;
                 }
         }
@@ -178,7 +202,6 @@ public class GameFragment extends BaseActivity implements View.OnClickListener, 
 
     private void finishGame(){
         mGameRoom.finishGame();
-        finish();
     }
 
     @Override
@@ -201,7 +224,6 @@ public class GameFragment extends BaseActivity implements View.OnClickListener, 
 
     }
 
-    @Override
     public void onBackPressed() {
         int message = 0;
         switch (mGameMode){
@@ -219,7 +241,7 @@ public class GameFragment extends BaseActivity implements View.OnClickListener, 
                 break;
         }
         if(message > 0){
-            showTwoBtnDialog(R.string.warning,
+            mListener.showTwoBtnDialog(R.string.warning,
                     message,
                     R.string.exit,
                     (dialog, which) -> exit(),

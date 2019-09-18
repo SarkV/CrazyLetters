@@ -21,7 +21,8 @@ public class Constants {
         ENABLE_SOUND,
         LAST_SYNC_DICTIONARY,
         LAST_SYNC_GAME_MODES,
-        WITHOUT_ADS
+        WITHOUT_ADS,
+        SIGN_IN_REFUSED
     }
 
     public static class Firebase{

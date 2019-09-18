@@ -5,6 +5,7 @@ import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -34,11 +35,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     private ISettings mListener;
 
-    Switch swAllowInvitations;
-    Switch swShowNotifications;
-    Switch swEnableSound;
-    TextView removeAdsTime;
-    ImageView removeAdsButton;
+    private Switch swAllowInvitations;
+    private Switch swShowNotifications;
+    private Switch swEnableSound;
+    private TextView removeAdsTime;
+    private ImageView removeAdsButton;
+
+    private TextView tvSignIn;
 
     private RewardedVideoAd mRewardedVideoAd;
 
@@ -63,6 +66,10 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if(mListener == null){
+            mListener = (ISettings) getActivity();
+        }
+
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getContext());
         mRewardedVideoAd.loadAd(BuildConfig.ADS ? getString(R.string.reward) : "ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
 
@@ -71,6 +78,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         swEnableSound = view.findViewById(R.id.swEnableSound);
         removeAdsTime = view.findViewById(R.id.tvRemoveAds);
         removeAdsButton = view.findViewById(R.id.ivRemoveAds);
+        tvSignIn = view.findViewById(R.id.btnSignOut);
 
 
         swShowNotifications.setChecked(Utils.getBooleanSharedPreferences(getContext(), Constants.Preferences.SHOW_NOTIFICATIONS.name(), true));
@@ -81,22 +89,33 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         view.findViewById(R.id.btnSave).setOnClickListener(this);
         view.findViewById(R.id.btnCancel).setOnClickListener(this);
-        view.findViewById(R.id.btnSignOut).setOnClickListener(this);
+
+        checkOffline();
 
         removeAdsButton.setOnClickListener(this);
     }
 
+    public void checkOffline(){
+        if(mListener.isOffline()){
+            tvSignIn.setText(R.string.sign_in);
+            tvSignIn.setOnClickListener(v -> mListener.signIn());
+        }else{
+            tvSignIn.setText(R.string.sign_out);
+            tvSignIn.setOnClickListener(v -> mListener.logout());
+        }
+    }
+
     private void checkAds(){
-       /* if(areAdsEnabled()){
+        if(mListener.areAdsEnabled()){
             removeAdsTime.setVisibility(View.GONE);
             removeAdsButton.setVisibility(View.VISIBLE);
-            setBannerAd();
+            mListener.setBannerAd();
         }else{
             removeAdsTime.setVisibility(View.VISIBLE);
             removeAdsButton.setVisibility(View.GONE);
             initializeTime();
-            hideAds();
-        }*/
+            mListener.hideAds();
+        }
     }
 
     private void initializeTime(){
@@ -129,7 +148,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     }
 
 
-    public void setRemoveAds(int time) {
+    private void setRemoveAds(int time) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.SECOND, time);
         Utils.setSharedPreferences(getContext(), Constants.Preferences.WITHOUT_ADS.name(), Utils.getUTCDate(cal.getTimeInMillis()));
@@ -153,9 +172,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                         swEnableSound.isChecked());
             case R.id.btnCancel:
                 mListener.onBackPressed();
-                break;
-            case R.id.btnSignOut:
-                mListener.logout();
                 break;
             case R.id.ivRemoveAds:
                 mRewardedVideoAd.setRewardedVideoAdListener(this);

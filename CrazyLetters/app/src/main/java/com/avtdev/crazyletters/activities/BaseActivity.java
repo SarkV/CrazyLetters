@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.avtdev.crazyletters.BuildConfig;
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.services.ConstantGS;
 import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.Utils;
@@ -72,6 +73,44 @@ public class BaseActivity extends AppCompatActivity {
         builder.show();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == ConstantGS.REQUEST_CODE.SIGN_IN && resultCode == RESULT_OK) {
+            GoogleService.getInstance(this).checkSignIn(data, (Constants.SignInStatus status) -> {
+                if(status != null && status.equals(Constants.SignInStatus.OK)){
+                    Utils.setSharedPreferences(this, Constants.Preferences.SIGN_IN_REFUSED.name(), false);
+                    if(this instanceof SplashActivity){
+                        ((SplashActivity) this).changeActivity(false);
+                    }else{
+                        ((MainActivity) this).reconnect();
+                    }
+                }else{
+                    showRestartDialog(this instanceof SplashActivity);
+                }
+            });
+        }else{
+            showRestartDialog(this instanceof SplashActivity);
+        }
+    }
+
+    public void signIn(){
+        GoogleService.getInstance(this).startSignInIntent();
+    }
+
+
+    public void showRestartDialog(boolean inSplash){
+        if(inSplash){
+            showDialog(R.string.error_title, R.string.error_login,
+                    R.string.retry, (dialog, which) -> GoogleService.getInstance(BaseActivity.this).startSignInIntent(),
+                    R.string.without_connection, (dialog, which) -> ((SplashActivity) this).changeActivity(true),
+                    R.string.exit, (dialog, which) -> System.exit(1));
+        }else{
+            showTwoBtnDialog(R.string.error_title, R.string.error_login,
+                    R.string.retry, (dialog, which) -> GoogleService.getInstance(BaseActivity.this).startSignInIntent(),
+                    R.string.cancel, (dialog, which) -> dialog.dismiss());
+        }
+    }
 
 }

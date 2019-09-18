@@ -189,12 +189,7 @@ public class GoogleService {
     public void showLeaderboard() {
         Games.getLeaderboardsClient(mContext, GoogleSignIn.getLastSignedInAccount(mContext))
                 .getLeaderboardIntent(mContext.getString(R.string.leaderboard_easy_level))
-                .addOnSuccessListener(new OnSuccessListener<Intent>() {
-                    @Override
-                    public void onSuccess(Intent intent) {
-                        ((Activity) mContext).startActivityForResult(intent, 9004);
-                    }
-                });
+                .addOnSuccessListener(intent -> ((Activity) mContext).startActivityForResult(intent, 9004));
     }
 
     public String getPlayerId() {

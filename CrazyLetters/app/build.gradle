@@ -13,20 +13,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        debug_non_google {
-            debuggable true
-            minifyEnabled false
-            buildConfigField "boolean", "GOOGLE_SERVICE", "false"
-            buildConfigField "boolean", "PRO", "false"
-            signingConfig signingConfigs.debug
-            buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
-            buildConfigField "boolean", "SYNCRO", "false"
-            buildConfigField "boolean", "ADS", "false"
-        }
         debug {
             debuggable true
             minifyEnabled false
-            buildConfigField "boolean", "GOOGLE_SERVICE", "true"
             buildConfigField "boolean", "PRO", "false"
             buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
             buildConfigField "boolean", "SYNCRO", "false"
@@ -36,7 +25,6 @@ android {
             debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "boolean", "GOOGLE_SERVICE", "true"
             buildConfigField "boolean", "PRO", "true"
             buildConfigField "long", "LAST_BUILD", System.currentTimeMillis() + "L"
             buildConfigField "boolean", "SYNCRO", "true"
