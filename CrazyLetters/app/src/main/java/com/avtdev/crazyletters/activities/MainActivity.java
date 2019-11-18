@@ -1,6 +1,7 @@
 package com.avtdev.crazyletters.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -21,11 +22,14 @@ import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.listeners.ISettings;
 import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.utils.Constants;
+import com.avtdev.crazyletters.utils.GameConstants;
 import com.avtdev.crazyletters.utils.Utils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.games.GamesActivityResultCodes;
+import com.google.android.gms.games.multiplayer.realtime.Room;
+import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
 import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends BaseActivity implements ISettings, IMain, IGame {
@@ -34,6 +38,7 @@ public class MainActivity extends BaseActivity implements ISettings, IMain, IGam
     AdRequest mAdRequest;
     FragmentManager mFragmentManager;
     AdView mAdView;
+    GoogleService mGoogleService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,9 @@ public class MainActivity extends BaseActivity implements ISettings, IMain, IGam
 
         mAdView = findViewById(R.id.adView);
         mFragmentManager = getSupportFragmentManager();
-        changeFragment(MainFragment.newInstance(this), true);
+        mGoogleService = GoogleService.getInstance(this);
+
+        changeFragment(MainFragment.newInstance(), true);
 
         if(adsEnabled == null || !adsEnabled){
             adsEnabled = false;
@@ -102,7 +109,7 @@ public class MainActivity extends BaseActivity implements ISettings, IMain, IGam
     }
 
     public void logout(){
-        GoogleService.getInstance(this).signOut((@NonNull Task task) -> {
+        mGoogleService.signOut((@NonNull Task task) -> {
             Utils.removeSharedPreferences(this, Constants.Preferences.SIGN_IN_REFUSED.name());
             startActivity(new Intent(MainActivity.this, SplashActivity.class));
             finish();
@@ -180,6 +187,33 @@ public class MainActivity extends BaseActivity implements ISettings, IMain, IGam
 
     }
 
-    // Google Play Games
+    @Override
+    public void selectGameMode(GameConstants.Level level){
+        mGoogleService.startQuickGame(level.getValue(), new RoomUpdateCallback() {
+            @Override
+            public void onRoomCreated(int i, @Nullable Room room) {
+            }
 
+            @Override
+            public void onJoinedRoom(int i, @Nullable Room room) {
+                showWaitingRoom(room);
+            }
+
+            @Override
+            public void onLeftRoom(int i, @NonNull String s) {
+
+            }
+
+            @Override
+            public void onRoomConnected(int i, @Nullable Room room) {
+                showWaitingRoom(room);
+            }
+        });
+    }
+
+    private void showWaitingRoom(Room room) {
+       /* Games.getRealTimeMultiplayerClient(this, mGoogleService.getSignedAccount())
+                .getWaitingRoomIntent(room, 1)
+                .addOnSuccessListener(intent -> startActivityForResult(intent, WAITING_ROOM_CODE));*/
+    }
 }

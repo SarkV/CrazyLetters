@@ -1,5 +1,6 @@
 package com.avtdev.crazyletters.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
@@ -45,13 +46,27 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     private RewardedVideoAd mRewardedVideoAd;
 
-    public static SettingsFragment newInstance(ISettings listener) {
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof ISettings){
+            mListener = (ISettings) context;
+        }else{
+            throw new RuntimeException("Context not instance of ISettings");
+        }
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public static SettingsFragment newInstance() {
         Bundle args = new Bundle();
 
         SettingsFragment fragment = new SettingsFragment();
         fragment.setArguments(args);
-        fragment.mListener = listener;
         return fragment;
     }
 

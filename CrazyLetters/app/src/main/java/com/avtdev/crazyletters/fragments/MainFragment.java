@@ -1,5 +1,6 @@
 package com.avtdev.crazyletters.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.avtdev.crazyletters.R;
+import com.avtdev.crazyletters.listeners.IGame;
 import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.listeners.ISettings;
 import com.avtdev.crazyletters.services.GoogleService;
@@ -24,17 +26,33 @@ public class MainFragment extends Fragment implements View.OnClickListener{
 
     private IMain mListener;
 
-    public final static int SHOW_INVITATION_CODE = 9008;
+    private final static int SHOW_INVITATION_CODE = 9008;
 
-    Button btnMultiplayer, btnSeeInvitations, btnLeaderboard;
+    private Button btnMultiplayer, btnSeeInvitations, btnLeaderboard;
 
-    public static MainFragment newInstance(IMain listener) {
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof IMain){
+            mListener = (IMain) context;
+        }else{
+            throw new RuntimeException("Context not instance of IMain");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public static MainFragment newInstance() {
 
         Bundle args = new Bundle();
 
         MainFragment fragment = new MainFragment();
         fragment.setArguments(args);
-        fragment.mListener = listener;
         return fragment;
     }
 
@@ -70,18 +88,17 @@ public class MainFragment extends Fragment implements View.OnClickListener{
             mListener.setDisabled(btnSeeInvitations);
             mListener.setDisabled(btnLeaderboard);
         }
-
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSinglePlayer:
-                GameDefinitionFragment gameDefinitionFragment = GameDefinitionFragment.newInstance(mListener, GameConstants.Mode.SINGLE_PLAYER);
+                GameDefinitionFragment gameDefinitionFragment = GameDefinitionFragment.newInstance( GameConstants.Mode.SINGLE_PLAYER);
                 mListener.changeFragment(gameDefinitionFragment, false);
                 break;
             case R.id.btnMultiplayer:
-                mListener.changeFragment(CompetitiveSelectionFragment.newInstance(mListener), false);
+                mListener.changeFragment(CompetitiveSelectionFragment.newInstance(), false);
                 break;
             case R.id.btnSeeInvitations:
                 Games.getInvitationsClient(getContext(), GoogleService.getInstance(getContext()).getSignedAccount())
@@ -92,7 +109,7 @@ public class MainFragment extends Fragment implements View.OnClickListener{
                 GoogleService.getInstance(getContext()).showLeaderboard();
                 break;
             case R.id.btnSettings:
-                mListener.changeFragment(SettingsFragment.newInstance((ISettings) mListener), false);
+                mListener.changeFragment(SettingsFragment.newInstance(), false);
                 break;
             case R.id.btnExit:
                 mListener.onBackPressed();

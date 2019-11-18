@@ -27,6 +27,8 @@ import com.google.android.gms.tasks.Task;
 
 public class BaseActivity extends AppCompatActivity {
 
+    GoogleService mGoogleService;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
@@ -98,7 +100,6 @@ public class BaseActivity extends AppCompatActivity {
     public void signIn(){
         GoogleService.getInstance(this).startSignInIntent();
     }
-
 
     public void showRestartDialog(boolean inSplash){
         if(inSplash){

@@ -1,6 +1,7 @@
 package com.avtdev.crazyletters.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,14 +18,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.avtdev.crazyletters.R;
-import com.avtdev.crazyletters.activities.BaseActivity;
 import com.avtdev.crazyletters.activities.GameListActivity;
 import com.avtdev.crazyletters.activities.LanguageSelectionActivity;
 import com.avtdev.crazyletters.listeners.IGame;
-import com.avtdev.crazyletters.listeners.IGameDefinition;
 import com.avtdev.crazyletters.listeners.IMain;
 import com.avtdev.crazyletters.models.realm.Game;
-import com.avtdev.crazyletters.services.GoogleService;
 import com.avtdev.crazyletters.services.RealmManager;
 import com.avtdev.crazyletters.utils.Constants;
 import com.avtdev.crazyletters.utils.GameConstants;
@@ -67,18 +65,31 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
     private CheckBox mAccent;
 
     private NumberPicker mTimePicker;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof IMain){
+            mListener = (IMain) context;
+        }else{
+            throw new RuntimeException("Context not instance of IMain");
+        }
+    }
 
-    public static GameDefinitionFragment newInstance(IMain listener, GameConstants.Mode gameMode) {
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    static GameDefinitionFragment newInstance(GameConstants.Mode gameMode) {
 
         Bundle args = new Bundle();
 
         GameDefinitionFragment fragment = new GameDefinitionFragment();
         fragment.setArguments(args);
-        fragment.mListener = listener;
         fragment.mGameMode = gameMode;
         return fragment;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -155,8 +166,6 @@ public class GameDefinitionFragment extends Fragment implements View.OnClickList
     }
 
     private void initializeVelocity(){
-
-
         mMinVelSB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

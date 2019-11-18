@@ -1,5 +1,6 @@
 package com.avtdev.crazyletters.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import com.avtdev.crazyletters.R;
 import com.avtdev.crazyletters.listeners.IMain;
+import com.avtdev.crazyletters.listeners.ISettings;
 import com.avtdev.crazyletters.utils.GameConstants;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 
@@ -20,13 +22,28 @@ public class CompetitiveSelectionFragment extends Fragment implements View.OnCli
 
     private static final int WAITING_ROOM_CODE = 9007;
 
-    public static CompetitiveSelectionFragment newInstance(IMain listener) {
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof IMain){
+            mListener = (IMain) context;
+        }else{
+            throw new RuntimeException("Context not instance of IMain");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public static CompetitiveSelectionFragment newInstance() {
 
         Bundle args = new Bundle();
 
         CompetitiveSelectionFragment fragment = new CompetitiveSelectionFragment();
         fragment.setArguments(args);
-        fragment.mListener = listener;
         return fragment;
     }
 
@@ -56,48 +73,18 @@ public class CompetitiveSelectionFragment extends Fragment implements View.OnCli
                 mListener.onBackPressed();
                 break;
             case R.id.btnEasy:
-                selectGameMode(GameConstants.Level.EASY);
+                mListener.selectGameMode(GameConstants.Level.EASY);
                 break;
             case R.id.btnMedium:
-                selectGameMode(GameConstants.Level.MEDIUM);
+                mListener.selectGameMode(GameConstants.Level.MEDIUM);
                 break;
             case R.id.btnDifficult:
-                selectGameMode(GameConstants.Level.DIFFICULT);
+                mListener.selectGameMode(GameConstants.Level.DIFFICULT);
                 break;
             case R.id.btnImpossible:
-                selectGameMode(GameConstants.Level.IMPOSSIBLE);
+                mListener.selectGameMode(GameConstants.Level.IMPOSSIBLE);
                 break;
         }
-    }
-
-    private void selectGameMode(GameConstants.Level level){
-
-       /* mGoogleService.startQuickGame(level.getValue(), new RoomUpdateCallback() {
-            @Override
-            public void onRoomCreated(int i, @Nullable Room room) {
-            }
-
-            @Override
-            public void onJoinedRoom(int i, @Nullable Room room) {
-                showWaitingRoom(room);
-            }
-
-            @Override
-            public void onLeftRoom(int i, @NonNull String s) {
-
-            }
-
-            @Override
-            public void onRoomConnected(int i, @Nullable Room room) {
-                showWaitingRoom(room);
-            }
-        });*/
-    }
-
-    private void showWaitingRoom(Room room) {
-       /* Games.getRealTimeMultiplayerClient(this, mGoogleService.getSignedAccount())
-                .getWaitingRoomIntent(room, 1)
-                .addOnSuccessListener(intent -> startActivityForResult(intent, WAITING_ROOM_CODE));*/
     }
 
    /* @Override

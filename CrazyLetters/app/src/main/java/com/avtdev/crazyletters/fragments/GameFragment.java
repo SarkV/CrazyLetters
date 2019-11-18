@@ -1,5 +1,6 @@
 package com.avtdev.crazyletters.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -54,13 +55,28 @@ public class GameFragment extends Fragment implements View.OnClickListener, Game
     int mMaxWordLength;
     boolean mSoundEnabled;
 
-    public static GameFragment newInstance(IGame listener, Game game, GameConstants.Mode gameMode) {
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof IGame){
+            mListener = (IGame) context;
+        }else{
+            throw new RuntimeException("Context not instance of IGame");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public static GameFragment newInstance(Game game, GameConstants.Mode gameMode) {
 
         Bundle args = new Bundle();
 
         GameFragment fragment = new GameFragment();
         fragment.setArguments(args);
-        fragment.mListener = listener;
         fragment.mGame = game;
         fragment.mGameMode = gameMode;
         return fragment;
